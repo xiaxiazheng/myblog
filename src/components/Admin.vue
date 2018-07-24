@@ -1,5 +1,6 @@
 <template>
   <div class="admin"><!-- 这是后端控制台的主Vue -->
+	  <!-- 左边的树 -->
 	  <div class="lefttree">
       <el-tree
 				:data="data6"
@@ -15,38 +16,58 @@
 				:allow-drag="allowDrag"
 				:expand-on-click-node="false">
 				<span class="custom-tree-node" slot-scope="{ node, data }">
-					<span>{{ node.label }}</span>
+					<span :class="{'biggerfont': !node.isLeaf}">{{ node.label }}</span>
 					<span>
 						<el-button
 							type="text"
 							size="mini"
+							@click="() => notify(node, data)">
+							<i class="el-icon-edit-outline"></i>
+						</el-button>
+						<el-button
+							type="text"
+							size="mini"
 							@click="() => append(node, data)">
-							Append
+							<i class="el-icon-circle-plus-outline"></i>
 						</el-button>
 						<el-button
 							type="text"
 							size="mini"
 							@click="() => remove(node, data)">
-							Delete
+							<i class="el-icon-delete"></i>	
 						</el-button>
 					</span>
 				</span>
 			</el-tree>
 		</div>
+		<!-- 右边的子组件 -->
 		<div class="rightcont">
-      <Content :label-obj="clickObj"></Content>
+      <AdminCont :label-obj="clickObj"></AdminCont>
 		</div>
+		<!-- 修改父节点名称的dialog -->
+		<el-dialog
+			title="提示"
+			:visible.sync="showDialog"
+			width="30%"
+			:before-close="handleCloseDialog">
+			<span>{{notice}}</span>
+			<el-input v-model="newNodeName" placeholder="请输入内容"></el-input>
+			<span slot="footer" class="dialog-footer">
+				<el-button @click="handleCloseDialog">取 消</el-button>
+				<el-button type="primary" @click="handleSaveNode">确 定</el-button>
+			</span>
+		</el-dialog>
   </div>
 </template>
 
 <script>
-import Content from './admin/Content'
+import AdminCont from './admin/AdminCont'
 import { treeData } from '@/mock.js'
 
 export default {
 	name: 'Admin',
 	components: {
-		Content
+		AdminCont
 	},
   data() {
 		return {
@@ -55,7 +76,10 @@ export default {
 			defaultProps: {
 				children: 'children',
 				label: 'label'
-			}
+			},
+			showDialog: false,
+			newNodeName: '',
+			notice: '',
 		};
 	},
 	mounted() {
@@ -64,14 +88,31 @@ export default {
 		});
 	},
 	methods: {
+		// 初始化数据
 		init() {
       this.data6 = treeData;
 		},
+
+		// 点击节点
 		handleClick(a, b, c) {
 			let isLeaf = b.isLeaf;
-			if(isLeaf) {
+			if(isLeaf) { // 若是子节点则右边显示具体信息
 				this.clickObj = b.data;
+			} else {  // 若是父节点，
+				
 			}
+		},
+
+		// 修改节点
+		notify(node, data) {
+			let isLeaf = node.isLeaf;
+			if(isLeaf) { // 若是子节点
+				this.notice = '修改子节点名称';
+			} else {  // 若是父节点，
+			  this.notice = '修改父节点名称';
+			}
+			this.newNodeName = data.label;
+    	this.showDialog = true;	
 		},
 		// 新增节点
 		append(node, data) {
@@ -145,6 +186,7 @@ export default {
         });
 			}
 		},
+
 		// 拖动开始
 		handleDragStart(node, ev) {
 			console.log('drag start', node);
@@ -161,7 +203,7 @@ export default {
 				message: '删除成功'
 			})
 		},
-		// 允许放下
+		// 允许放下，这里要限制不允许放在子节点
 		allowDrop(draggingNode, dropNode, type) {
 			if (dropNode.data.label === '二级 3-1') {
 				return type !== 'inner';
@@ -169,10 +211,34 @@ export default {
 				return true;
 			}
 		},
-		// 允许拖动
+		// 允许拖动，这里要限制父节点不准拖动
 		allowDrag(draggingNode) {
 			return draggingNode.data.label.indexOf('三级 3-2-2') === -1;
-		}
+		},
+
+    // 处理关闭dialog
+		handleCloseDialog() {
+			this.showDialog = false;
+			this.newNodeName = '';
+		},
+		// 保存节点名称
+	  handleSaveNode() {
+			if(this.newNodeName === '') {
+				this.$message({
+					type: 'warning',
+					message: '父节点名称不能为空'
+				});
+				return;
+			}
+			// TODO,这里直接把节点数据传到后台，然后成功了再传回来初始化这个树
+			this.showDialog = false;
+			this.$message({
+				type: 'success',
+				message: '保存父节点名称成功'
+			});
+			this.newNodeName = '';
+			this.init();
+		},
   },
 }
 </script>
@@ -182,7 +248,7 @@ export default {
 @import '../static/global.less';
 
   .admin {
-		height: 800px;
+		height: 100%;
 		.custom-tree-node {
 			flex: 1;
 			display: flex;
@@ -190,6 +256,9 @@ export default {
 			justify-content: space-between;
 			font-size: 14px;
 			padding-right: 8px;
+		}
+		.biggerfont {
+			font-size: 16px;
 		}
   }
 </style>

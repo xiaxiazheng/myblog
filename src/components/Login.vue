@@ -15,7 +15,7 @@ export default {
 	name: 'Login',
 	data() {
 		return {
-      showAdmin: true,
+      showAdmin: false,
 		}
 	},
   components: {
@@ -35,6 +35,7 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" scoped>
   .login {
+    height: 100%;
     h1 {
       color: red;
     }

@@ -1,8 +1,7 @@
 <template>
-  <div class="content"><!-- 这是前端展示页面的主Vue -->
+  <div class="admincont"><!-- 这是前端展示页面的主Vue -->
 	  <div v-if="labelObj.label">
       <h1>{{labelObj.label}}</h1>
-			hello
 			<span v-if="labelObj.id">{{labelObj.id}}</span>
 			<ul>
 				<li v-for="(item, index) in dataObj" :key="index">
@@ -21,7 +20,7 @@
 			</div>
 		</div>
 		<div v-else>
-			nothing
+			<h2>Welcome !</h2>
 		</div>
   </div>
 </template>
@@ -75,7 +74,7 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less">
-  .content {
+  .admincont {
 		text-align: left;
 		padding: 10px;
     h1 {

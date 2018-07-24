@@ -10,19 +10,19 @@
 			</el-tree>
 		</div>
 		<div class="rightcont">
-      <Content :label-obj="clickObj"></Content>
+      <HomeCont :label-obj="clickObj"></HomeCont>
 		</div>
   </div>
 </template>
 
 <script>
-import Content from './home/Content'
+import HomeCont from './home/HomeCont'
 import { treeData } from "@/mock.js";
 
 export default {
   name: 'Home',
   components: {
-    Content,
+    HomeCont,
   },
   data() {
     return {
@@ -58,6 +58,6 @@ export default {
 @import '../static/global.less';
 
   .home {
-    height: 800px;
+    height: 100%;
   }
 </style>

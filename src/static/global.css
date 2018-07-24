@@ -1,20 +1,26 @@
 .lefttree {
   display: inline-block;
   overflow: hidden;
+  overflow-y: auto;
   width: 20rem;
   height: 100%;
   vertical-align: top;
 }
+.lefttree .el-tree {
+  padding: 10px 5px;
+}
 .rightcont {
   display: inline-block;
   overflow: hidden;
+  overflow-y: auto;
   width: calc(80%);
   height: 100%;
   border-left: 1px solid black;
   box-sizing: border-box;
   vertical-align: top;
 }
-.rightcont .content {
+.rightcont .admincont,
+.rightcont .homecont {
   max-width: 740px;
   margin: 0 auto;
   padding: 2rem 2.5rem;

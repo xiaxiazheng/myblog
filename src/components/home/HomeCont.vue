@@ -1,5 +1,5 @@
 <template>
-  <div class="content"><!-- 这是前端展示页面的主Vue -->
+  <div class="homecont"><!-- 这是前端展示页面的主Vue -->
 		<div v-if="labelObj.label">
       <h1>{{labelObj.label}}</h1>
 			hello
@@ -12,7 +12,7 @@
 			</ul>
 		</div>
 		<div v-else>
-			nothing
+			<h2>Welcome !</h2>
 		</div>
   </div>
 </template>
@@ -42,7 +42,7 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less">
-  .content {
+  .homecont {
 		text-align: left;
 		padding: 10px;
     h1 {

@@ -10,6 +10,7 @@
   "dependencies": {
     "axios": "^0.18.0",
     "element-ui": "^2.4.4",
+    "express": "^4.16.3",
     "less": "^3.7.1",
     "less-loader": "^4.1.0",
     "vue": "^2.5.16",
@@ -19,6 +20,7 @@
     "@vue/cli-plugin-babel": "^3.0.0-rc.5",
     "@vue/cli-plugin-eslint": "^3.0.0-rc.5",
     "@vue/cli-service": "^3.0.0-rc.5",
+    "file-loader": "^1.1.11",
     "vue-template-compiler": "^2.5.16"
   },
   "eslintConfig": {
