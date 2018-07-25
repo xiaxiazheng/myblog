@@ -2,6 +2,11 @@ var fs = require('fs');            // 用于处理本地文件
 var express = require('express');
 var app = express();
 
+// 让req获取到参数
+var bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json())
+
 // var bodyParser = require('body-parser');
 // app.use(bodyParser.urlencoded({extended: false}));
 // app.use(bodyParser.json());
@@ -29,9 +34,9 @@ app.get('/', function(req, res) {
 
 /* 开始写接口 */
 // 登录
-var login = require('./dbconfig/login.js');
+var login = require('./server/login.js');
 app.post('/login', function(req, res) {
-	login.getLogin(req, res);
+	login.checkLogin(req, res);
 });
 // app.get()
 /* 结束 */
