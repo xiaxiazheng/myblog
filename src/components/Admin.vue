@@ -3,7 +3,7 @@
 	  <!-- 左边的树 -->
 	  <div class="lefttree">
       <el-tree
-				:data="data6"
+				:data="tree"
 				:props="defaultProps"
 				node-key="id"
 				default-expand-all
@@ -21,7 +21,7 @@
 						<el-button
 							type="text"
 							size="mini"
-							@click="() => notify(node, data)">
+							@click="() => motify(node, data)">
 							<i class="el-icon-edit-outline"></i>
 						</el-button>
 						<el-button
@@ -51,7 +51,7 @@
 			width="30%"
 			:before-close="handleCloseDialog">
 			<span>{{notice}}</span>
-			<el-input v-model="newNodeName" placeholder="请输入内容"></el-input>
+			<el-input v-model="motifyNode.newNodeName" placeholder="请输入内容"></el-input>
 			<span slot="footer" class="dialog-footer">
 				<el-button @click="handleCloseDialog">取 消</el-button>
 				<el-button type="primary" @click="handleSaveNode">确 定</el-button>
@@ -62,7 +62,8 @@
 
 <script>
 import AdminCont from './admin/AdminCont'
-import { treeData } from '@/mock.js'
+import apiUrl from '@/api/url.js'
+// import { treeData } from '@/mock.js'
 
 export default {
 	name: 'Admin',
@@ -72,13 +73,17 @@ export default {
   data() {
 		return {
 			clickObj: '',
-			data6: [],
+			tree: [],
 			defaultProps: {
 				children: 'children',
 				label: 'label'
 			},
 			showDialog: false,
-			newNodeName: '',
+			motifyNode: {
+				id: '',
+				newNodeName: '',
+				isLeaf: ''
+			},
 			notice: '',
 		};
 	},
@@ -88,9 +93,16 @@ export default {
 		});
 	},
 	methods: {
-		// 初始化数据
 		init() {
-      this.data6 = treeData;
+			// this.tree = treeData;
+			var self = this,
+          params = {};
+      // this.tree = treeData;
+      apiUrl.getTree(params).then(function(res) {
+        self.tree = res.data;
+      }).catch(function(res) {
+        console.log(res.message);
+      });
 		},
 
 		// 点击节点
@@ -104,62 +116,78 @@ export default {
 		},
 
 		// 修改节点
-		notify(node, data) {
+		motify(node, data) {
 			let isLeaf = node.isLeaf;
 			if(isLeaf) { // 若是子节点
 				this.notice = '修改子节点名称';
 			} else {  // 若是父节点，
 			  this.notice = '修改父节点名称';
 			}
-			this.newNodeName = data.label;
+			this.motifyNode = {
+				id: data.id,
+				isLeaf: node.isLeaf,
+				newNodeName: data.label,
+			}
     	this.showDialog = true;	
 		},
 		// 新增节点
 		append(node, data) {
 			// 这里先请求后台数据
-			if(node.isLeaf) { // 若是叶子节点
-				let parentId = node.parent.data.id;
-				for(let i in this.data6) {
-					if(this.data6[i].id === parentId) {
-            this.data6[i].children.push({
-							id: Math.floor(Math.random()*1000),
-							label: 'newchild'
-						});
-						break;
-					}
-				}
+			var self = this,
+			    params = {
+						isLeaf: node.isLeaf,
+					};
+			if(node.isLeaf) {  // 若是子节点
+				params.id = node.parent.data.id;
+				params.label = node.parent.data.label;
+				params.f_sort = node.parent.data.sort;
+				var list = node.parent.data.children;
+				params.c_sort = list[list.length - 1].sort; // 传当前父节点的最后一个子节点的sort过去
 			} else { // 若是父节点
-				this.data6.push({
-					id: Math.floor(Math.random()*1000),
-					label: 'newNode',
-					children: [{ // 让新增的父节点自带一个子节点
-						id: Math.floor(Math.random()*1000),
-						label: 'newchild'
-					}]
-				});
+				var list = node.parent.data;
+				params.sort = list[list.length - 1].sort; // 传最后一个父节点的sort过去
 			}
+			apiUrl.addTreeNode(params).then(function(res) {
+				if(res.data.resultsCode === 'success') {
+					self.$message({
+						type: 'success',
+						message: res.data.message
+					})
+					self.init();
+				}
+			}).catch(function(res) {
+				console.log(res.message);
+			});
 		},
     // 删除节点
 		remove(node, data) {
 			if(node.isLeaf) { // 若是叶子节点
 				let parentId = node.parent.data.id;
-				for(let i in this.data6) {
-					if(this.data6[i].id === parentId) {
-						let childlist =this.data6[i].children;
+				for(let i in this.tree) {
+					if(this.tree[i].id === parentId) {
+						let childlist = this.tree[i].children;
 						if(childlist.length === 1) { // 保证每个父节点至少有一个子节点
 							this.$message({
 								type: 'error',
 								message: "这里只有一个子节点了，不能删除"
 							});
-							break;
+							return;
 						}
-						for(let j in childlist) {
-							if(childlist[j].id === data.id) {
-								this.data6[i].children.splice(j, 1);
-								break;
-							}
-						}
-						break;
+						// 删除子节点
+						var self = this,
+								params = {
+									id: data.id,
+									isLeaf: node.isLeaf
+								};
+						apiUrl.deleteTreeNode(params).then(function(res) {
+							self.$message({
+								type: 'success',
+								message: res.data.message
+							});
+							self.init();
+						}).catch(function(res) {
+							console.log(res.message);
+						});
 					}
 				}
 			} else { // 若是父节点，就慎重一点
@@ -167,17 +195,22 @@ export default {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
-        }).then(() => {
-					for(let i in this.data6) {
-						if(this.data6[i].id === data.id) {
-							this.data6.splice(i, 1);
-							break;
-						}
-					}
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
-          });
+        }).then(() => { 
+					// 删除父节点
+					var self = this,
+							params = {
+								isLeaf: node.isLeaf,
+								id: data.id,
+							};
+					apiUrl.deleteTreeNode(params).then(function(res) {
+						self.$message({
+							type: res.data.resultsCode,
+							message: res.data.message
+						});
+						self.init();
+					}).catch(function(res) {
+						console.log(res.message);
+					});
         }).catch(() => {
           // this.$message({
           //   type: 'info',
@@ -185,6 +218,43 @@ export default {
           // });          
         });
 			}
+		},
+
+		// 处理关闭dialog
+		handleCloseDialog() {
+			this.showDialog = false;
+			this.motifyNode = {
+				id: '',
+				newNodeName: '',
+				isLeaf: ''
+			};
+		},
+		// 保存修改的节点名称
+	  handleSaveNode() {
+			if(this.newNodeName === '') {
+				this.$message({
+					type: 'warning',
+					message: '父节点名称不能为空'
+				});
+				return;
+			}
+			var self = this,
+			    params = {
+						id: this.motifyNode.id,
+						label: this.motifyNode.newNodeName,
+						isLeaf: this.motifyNode.isLeaf
+					};
+			apiUrl.modifyTreeNode(params).then(function(res) {
+				self.showDialog = false;
+				self.$message({
+					type: 'success',
+					message: '保存父节点名称成功'
+				});
+				self.motifyNode.newNodeName = '';
+				self.init();
+			}).catch(function(res) {
+
+			});
 		},
 
 		// 拖动开始
@@ -214,30 +284,6 @@ export default {
 		// 允许拖动，这里要限制父节点不准拖动
 		allowDrag(draggingNode) {
 			return draggingNode.data.label.indexOf('三级 3-2-2') === -1;
-		},
-
-    // 处理关闭dialog
-		handleCloseDialog() {
-			this.showDialog = false;
-			this.newNodeName = '';
-		},
-		// 保存节点名称
-	  handleSaveNode() {
-			if(this.newNodeName === '') {
-				this.$message({
-					type: 'warning',
-					message: '父节点名称不能为空'
-				});
-				return;
-			}
-			// TODO,这里直接把节点数据传到后台，然后成功了再传回来初始化这个树
-			this.showDialog = false;
-			this.$message({
-				type: 'success',
-				message: '保存父节点名称成功'
-			});
-			this.newNodeName = '';
-			this.init();
 		},
   },
 }

@@ -4,13 +4,10 @@ var app = express();
 
 // 让req获取到参数
 var bodyParser = require('body-parser');
-app.use(bodyParser.urlencoded({ extended: false }))
-app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
-// var bodyParser = require('body-parser');
-// app.use(bodyParser.urlencoded({extended: false}));
-// app.use(bodyParser.json());
-
+// 给所有的加该请求头
 app.all('*', function(req, res, next) {
 	res.header('Access-Control-Allow-Origin', '*');
 	res.header('Access-Control-Allow-Headers', 'Content-Type, Content-Length, Authorization, Accept, X-Requested-With , yourHeaderFeild');
@@ -33,11 +30,31 @@ app.get('/', function(req, res) {
 });
 
 /* 开始写接口 */
-// 登录
-var login = require('./server/login.js');
-app.post('/login', function(req, res) {
-	login.checkLogin(req, res);
-});
+	// 登录
+	var login = require('./server/login.js');
+	app.post('/login', function(req, res) {
+		login.checkLogin(req, res);
+	});
+	// 操作树节点
+	var tree = require('./server/tree.js');
+	app.get('/tree', function(req, res) {
+    tree.getTree(req, res);
+	});
+	app.get('/addtreenode', function(req, res) {
+		tree.addTreeNode(req, res);
+	});
+	app.get('/modifytreenode', function(req, res) {
+		tree.modifyTreeNode(req, res);
+	});
+	app.get('/deletetreenode', function(req, res) {
+		tree.deleteTreeNode(req, res);
+	});
+	// 获取子节点信息
+	var cont = require('./server/cont.js');
+	app.get('/anode', function(req, res) {
+    cont.getNodeCont(req, res);
+	});
+	
 // app.get()
 /* 结束 */
 

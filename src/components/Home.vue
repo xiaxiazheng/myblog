@@ -17,7 +17,8 @@
 
 <script>
 import HomeCont from './home/HomeCont'
-import { treeData } from "@/mock.js";
+import apiUrl from '@/api/url.js'
+// import { treeData } from "@/mock.js";
 
 export default {
   name: 'Home',
@@ -41,12 +42,20 @@ export default {
   },
   methods: {
     init() {
-      this.tree = treeData;
+      var self = this,
+          params = {};
+      // this.tree = treeData;
+      apiUrl.getTree(params).then(function(res) {
+        self.tree = res.data;
+      }).catch(function(res) {
+        console.log(res.message);
+      });
     },
     handleClick(a, b, c) {
 			let isLeaf = b.isLeaf;
 			if(isLeaf) {
-				this.clickObj = b.data;
+        this.clickObj = b.data;
+        console.log(b.data);
 			}
 		},
   }
