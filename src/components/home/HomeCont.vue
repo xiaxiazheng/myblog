@@ -1,21 +1,23 @@
 <template>
-  <div class="homecont"><!-- 这是前端展示页面的主Vue -->
+  <div class="homecont">
 		<div v-if="labelObj.label">
       <h1>{{labelObj.label}}</h1>
-			<h2>
-				修改时间：
-				<span v-if="contObj.motifytime">{{contObj.motifytime}}</span>
-			</h2>
-			<span v-if="labelObj.id">{{labelObj.id}}</span>
+			<!-- <span v-if="labelObj.id">{{labelObj.id}}</span> -->
 			<ul>
 				<li v-for="(item, index) in contObj.list" :key="index">
-					<h2>{{item.title}}</h2>
+					<h2>
+						{{item.title}}
+						<span v-if="contObj.list">
+							修改时间：
+							<span>{{item.motifytime}}</span>
+						</span>
+					</h2>
 					<p>{{item.cont}}</p>
 				</li>
 			</ul>
 		</div>
 		<div v-else>
-			<h2>Welcome !</h2>
+			<h1>Welcome !</h1>
 		</div>
   </div>
 </template>
@@ -49,7 +51,7 @@ export default {
 						params = {
 							id: this.labelObj.id, // 子节点的id
 						};
-				apiUrl.getANode(params).then(function(res) {
+				apiUrl.getNodeCont(params).then(function(res) {
 					self.contObj = res.data;
 				}).catch(function(res) {
 					console.log(res.message);
@@ -67,15 +69,30 @@ export default {
 		padding: 10px;
     h1 {
 			font-size: 2.2rem;
-      margin-bottom: 10px;
+			margin-bottom: 10px;
+			padding-right: 20px;
 		}
 		h2 {
-			font-size: 1.65rem;
+			font-size: 1.5rem;
 			padding-bottom: .3rem;
 			border-bottom: 1px solid #eaecef;
+			position: relative;
+			>span {
+				position: absolute;
+				right: 0;
+				bottom: .3rem;
+				font-size: .8rem;
+				color: #999;
+			}
+		}
+		ul {
+			margin-top: 20px;
+			li {
+				margin: 15px 0;
+			}
 		}
 		p {
-			font-size: 1.4rem;
+			font-size: 1.3rem;
 			text-indent: 2rem;
 			line-height: 1.7;
 			margin: .5rem 0;

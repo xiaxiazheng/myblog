@@ -1,6 +1,7 @@
 var fs = require('fs');            // 用于处理本地文件
 var express = require('express');
 var app = express();
+// app.use(express.static('public'));
 
 // 让req获取到参数
 var bodyParser = require('body-parser');
@@ -49,12 +50,20 @@ app.get('/', function(req, res) {
 	app.get('/deletetreenode', function(req, res) {
 		tree.deleteTreeNode(req, res);
 	});
-	// 获取子节点信息
+	// 操作子节点
 	var cont = require('./server/cont.js');
-	app.get('/anode', function(req, res) {
+	app.get('/cont', function(req, res) {
     cont.getNodeCont(req, res);
 	});
-	
+	app.post('/addnodecont', function(req, res) {
+		cont.addNodeCont(req, res);
+	});
+	app.post('/modifynodecont', function(req, res) {
+		cont.modifyNodeCont(req, res);
+	});
+	app.get('/deletenodecont', function(req, res) {
+		cont.deleteNodeCont(req, res);
+	});
 // app.get()
 /* 结束 */
 
@@ -73,7 +82,7 @@ app.get('*', function(req, res) {
 			var filename = req.path.substring(1);    // 去掉前导'/'
       var type = getType(filename.substring(filename.lastIndexOf('.') + 1));
 			res.writeHead(200, { "Content-Type": type });
-			res.write(data.toString());
+			res.write(data.toString(), 'binary');
 		}
 		res.end();
 	});
@@ -105,6 +114,16 @@ function getType(endTag){
 			break;
 	case 'manifest' :
 			type = 'text/cache-manifest; charset="UTF-8"';
+			break;
+	case 'ico' :
+			type = 'image/x-icon;';
+			break;
+	case 'jpeg' :
+	case 'jpg' :
+			type = 'image/jpeg;';
+			break;
+	case 'png' :
+			type = 'image/png;';
 			break;
 	default :
 			type = 'application/octet-stream';

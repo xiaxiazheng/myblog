@@ -1,18 +1,18 @@
 <template>
-  <div class="admincont"><!-- 这是前端展示页面的主Vue -->
+  <div class="admincont">
 	  <div v-if="labelObj.label">
       <h1>{{labelObj.label}}</h1>
 			<h2>
 				修改时间：
-				<span v-if="contObj.motifytime">{{contObj.motifytime}}</span>
+				<span v-if="contObj.list">{{contObj.list[0].motifytime}}</span>
 			</h2>
-			<span v-if="labelObj.id">{{labelObj.id}}</span>
+			<!-- <span v-if="labelObj.id">{{labelObj.id}}</span> -->
 			<ul>
 				<li v-for="(item, index) in contObj.list" :key="index">
 					<el-input v-model="item.title" placeholder="请输入内容"></el-input>
           <el-input
 						type="textarea"
-						:autosize="{ minRows: 2, maxRows: 4}"
+						:autosize="{ minRows: 3, maxRows: 8}"
 						placeholder="请输入内容"
 						v-model="item.cont">
 					</el-input>
@@ -39,7 +39,7 @@ export default {
   data() {
     return {
 			contObj: [],
-			isModify: false
+			isModify: true
     }
 	},
 	mounted() {
@@ -51,7 +51,7 @@ export default {
     labelObj() {
 			this.init();
 		},
-		// contObj:{
+		// contObj:{ // 尝试控制修改了才能点击保存按钮
 		// 	immediate: true,
 		// 	handler: function (val,oldVal) {
 		// 		this.isModify = true;
@@ -67,7 +67,7 @@ export default {
 						params = {
 							id: this.labelObj.id, // 子节点的id
 						};
-				apiUrl.getANode(params).then(function(res) {
+				apiUrl.getNodeCont(params).then(function(res) {
 					self.contObj = res.data;
 					// self.isModify = false;
 					// self.$watch('contObj', function(){self.isModify = true}, {deep: true});
@@ -76,15 +76,28 @@ export default {
 				});
 			}
 		},
+		// 新增节点
 		addCont() {
-      this.contObj.list.push({
-				title: '请输入标题',
-				cont: '请输入内容'
-			});
+			var self = this,
+					params = {
+						id: this.labelObj.id, // 子节点的id
+						sort: this.contObj.list[this.contObj.list.length - 1].sort,
+					};
+			apiUrl.addNodeCont(params).then(function(res) {
+					self.$message({
+						type: "success",
+						message: res.data.message
+					});
+					self.init();
+					// self.isModify = false;
+					// self.$watch('contObj', function(){self.isModify = true}, {deep: true});
+				}).catch(function(res) {
+					console.log(res.message);
+				});
 		},
+		// 先判断判断
 		judge() {
 			for(let item of this.contObj.list) {
-				console.log(item);
 				if(item.cont === '') {
 					this.$message({
 						type: "warning",
@@ -93,11 +106,27 @@ export default {
 					return;
 				}
 			}
-			this.$message({
-				type: "success",
-				message: '保存成功'
+			this.saveModify();
+		},
+		// 再保存修改
+		saveModify() {
+			var self = this,
+					params = this.contObj;
+			console.log("params");
+			console.log(params);
+			apiUrl.modifyNodeCont(params).then(function(res) {
+				self.$message({
+					type: "success",
+					message: res.data.message
+				});
+				self.init();
+			}).catch(function(res) {
+				self.$message({
+					type: "error",
+					message: res.data.message
+				});
 			});
-		}
+		},
 	}
 }
 </script>

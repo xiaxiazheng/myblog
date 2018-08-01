@@ -12,16 +12,25 @@ export default {
     return axios.get(baseUrl + '/tree', {params});
   },
   addTreeNode(params) {
-    return axios.get(baseUrl + '/addtreenode', {params});
+    return axios.get(baseUrl + '/addtreenode', params);
   },
   modifyTreeNode(params) {
-    return axios.get(baseUrl + '/modifytreenode', {params});
+    return axios.get(baseUrl + '/modifytreenode', params);
   },
   deleteTreeNode(params) {
     return axios.get(baseUrl + '/deletetreenode', {params});
   },
   /** 操作子节点内容 */
-  getANode(params) {
-    return axios.get(baseUrl + '/anode', {params});
-  }
+  getNodeCont(params) {
+    return axios.get(baseUrl + '/cont', {params});
+  },
+  addNodeCont(params) {
+    return axios.post(baseUrl + '/addnodecont', params);
+  },
+  modifyNodeCont(params) {
+    return axios.post(baseUrl + '/modifynodecont', params);
+  },
+  deleteNodeCont(params) {
+    return axios.get(baseUrl + '/deletenodecont', {params});
+  },
 }

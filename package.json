@@ -26,13 +26,12 @@
     "vue-template-compiler": "^2.5.16"
   },
   "eslintConfig": {
-    "root": true,
+    "root": true, 
     "env": {
       "node": true
     },
     "extends": [
-      "plugin:vue/essential",
-      "eslint:recommended"
+      "plugin:vue/essential"
     ],
     "rules": {},
     "parserOptions": {
