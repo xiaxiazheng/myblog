@@ -12,7 +12,7 @@
 							<span>{{item.motifytime}}</span>
 						</span>
 					</h2>
-					<p v-html="item.cont"></p>
+					<p v-html="item.cont" v-highlight></p>
 				</li>
 			</ul>
 		</div>
@@ -54,9 +54,12 @@ export default {
 				apiUrl.getNodeCont(params).then(function(res) {
 					self.contObj = res.data;
 					for(let i in self.contObj.list) {
-						self.contObj.list[i].cont = self.contObj.list[i].cont.replace(/</g, "&lt;"); // html标签转成实体字符
-						self.contObj.list[i].cont = self.contObj.list[i].cont.replace(/ /g, "&nbsp;&nbsp;");
-						self.contObj.list[i].cont = self.contObj.list[i].cont.replace(/\n|\r\n/g, "<br/>");
+						self.contObj.list[i].cont = self.contObj.list[i].cont.replace(/</g, "&lt;"); // html标签的<转成实体字符,让所有的html标签失效
+						self.contObj.list[i].cont = self.contObj.list[i].cont.replace(/&lt;pre/g, "<pre"); // 把pre标签转回来
+						self.contObj.list[i].cont = self.contObj.list[i].cont.replace(/&lt;\/pre>\n/g, "</pre>"); // 把pre结束标签转回来
+						self.contObj.list[i].cont = self.contObj.list[i].cont.replace(/>\n/g, ">");
+						self.contObj.list[i].cont = self.contObj.list[i].cont.replace(/  /g, "&nbsp;&nbsp;"); // 把空格转成实体字符，以防多空格被合并
+						self.contObj.list[i].cont = self.contObj.list[i].cont.replace(/\n|\r\n/g, "<br/>"); // 把换行转成br标签
 					}
 				}).catch(function(res) {
 					console.log(res.message);
@@ -70,8 +73,9 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less">
   .homecont {
-		text-align: left;
 		padding: 10px;
+		text-align: left;
+		line-height: 1.5;
     h1 {
 			margin-bottom: 10px;
 			padding-right: 20px;
@@ -98,6 +102,19 @@ export default {
 			font-size: 1rem;
 			line-height: 1.7;
 			margin-bottom: .6rem;
+		}
+		pre {
+			margin: 0;
+			// color: white;
+			// background-color: #23241f;
+			overflow-x: auto;
+			padding: 3px 1rem;
+      white-space: pre;
+			word-wrap: normal;
+			border: 1px solid black;
+			border-radius: .5rem;
+			font-size: .859rem;
+			font-family: Consolas, "Andale Mono WT", "Andale Mono", "Lucida Console", "Lucida Sans Typewriter", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", Monaco, "Courier New", Courier, monospace;
 		}
   }
 </style>

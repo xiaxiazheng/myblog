@@ -81,19 +81,19 @@ export default {
 						sort: this.contObj.list[this.contObj.list.length - 1].sort,
 					};
 			apiUrl.addNodeCont(params).then(function(res) {
-					self.$message({
-						type: "success",
-						message: res.data.message
-					});
-					self.init();
-					// self.isModify = false;
-					// self.$watch('contObj', function(){self.isModify = true}, {deep: true});
-				}).catch(function(res) {
-					self.$message({
-						type: "error",
-						message: res.data.message
-					});
+				self.$message({
+					type: "success",
+					message: res.data.message
 				});
+				self.init();
+				// self.isModify = false;
+				// self.$watch('contObj', function(){self.isModify = true}, {deep: true});
+			}).catch(function(res) {
+				self.$message({
+					type: "error",
+					message: res.data.message
+				});
+			});
 		},
 		// 先判断判断
 		judge() {
