@@ -20,7 +20,7 @@ export default {
 	name: 'Login',
 	data() {
 		return {
-      showAdmin: false, // 为true跳过登录
+      showAdmin: true, // 为true跳过登录
       username: '',
       userpword: '',
 		}

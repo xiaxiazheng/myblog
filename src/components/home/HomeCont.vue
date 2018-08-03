@@ -12,7 +12,7 @@
 							<span>{{item.motifytime}}</span>
 						</span>
 					</h2>
-					<p>{{item.cont}}</p>
+					<p v-html="item.cont"></p>
 				</li>
 			</ul>
 		</div>
@@ -53,6 +53,11 @@ export default {
 						};
 				apiUrl.getNodeCont(params).then(function(res) {
 					self.contObj = res.data;
+					for(let i in self.contObj.list) {
+						self.contObj.list[i].cont = self.contObj.list[i].cont.replace(/</g, "&lt;"); // html标签转成实体字符
+						self.contObj.list[i].cont = self.contObj.list[i].cont.replace(/ /g, "&nbsp;&nbsp;");
+						self.contObj.list[i].cont = self.contObj.list[i].cont.replace(/\n|\r\n/g, "<br/>");
+					}
 				}).catch(function(res) {
 					console.log(res.message);
 				});
@@ -68,12 +73,10 @@ export default {
 		text-align: left;
 		padding: 10px;
     h1 {
-			font-size: 2.2rem;
 			margin-bottom: 10px;
 			padding-right: 20px;
 		}
 		h2 {
-			font-size: 1.5rem;
 			padding-bottom: .3rem;
 			border-bottom: 1px solid #eaecef;
 			position: relative;
@@ -88,14 +91,13 @@ export default {
 		ul {
 			margin-top: 20px;
 			li {
-				margin: 15px 0;
+				margin: 20px 0;
 			}
 		}
 		p {
-			font-size: 1.3rem;
-			text-indent: 2rem;
+			font-size: 1rem;
 			line-height: 1.7;
-			margin: .5rem 0;
+			margin-bottom: .6rem;
 		}
   }
 </style>

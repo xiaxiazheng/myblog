@@ -16,7 +16,7 @@
 				:allow-drag="allowDrag"
 				:expand-on-click-node="false">
 				<span class="custom-tree-node" slot-scope="{ node, data }">
-					<span :class="{'biggerfont': !node.isLeaf}">{{ node.label }}</span>
+					<span>{{ node.label }}</span>
 					<span>
 						<el-button
 							type="text"
@@ -44,7 +44,7 @@
 		<div class="rightcont">
       <AdminCont :label-obj="clickObj"></AdminCont>
 		</div>
-		<!-- 修改父节点名称的dialog -->
+		<!-- 修改节点名称的dialog -->
 		<el-dialog
 			title="提示"
 			:visible.sync="showDialog"
@@ -72,8 +72,9 @@ export default {
 	},
   data() {
 		return {
-			clickObj: '',
+			clickObj: '', // 传给子组件的，包括子节点的id和label
 			tree: [],
+			newChildLabel: '',
 			defaultProps: {
 				children: 'children',
 				label: 'label'
@@ -94,33 +95,33 @@ export default {
 	},
 	methods: {
 		init() {
-			// this.tree = treeData;
 			var self = this,
           params = {};
       // this.tree = treeData;
       apiUrl.getTree(params).then(function(res) {
-        self.tree = res.data;
+				self.tree = res.data;
       }).catch(function(res) {
         console.log(res.message);
       });
 		},
 
-		// 点击节点
-		handleClick(a, b, c) {
-			let isLeaf = b.isLeaf;
+		// 点击节点，三个参数分别为传递给 data 属性的数组中该节点所对应的对象、节点对应的 Node、节点组件本身。
+		handleClick(obj, node, component) {
+			let isLeaf = node.isLeaf;
 			if(isLeaf) { // 若是子节点则右边显示具体信息
-				this.clickObj = b.data;
-			} else {  // 若是父节点，
-				
+				this.clickObj = node.data;
+				// 备份一下
+				this.nowChildNode.isLeaf = node.isLeaf;
+			  this.nowChildNode.data = node.data;
 			}
 		},
 
 		// 修改节点
 		motify(node, data) {
 			let isLeaf = node.isLeaf;
-			if(isLeaf) { // 若是子节点
+			if(isLeaf) {
 				this.notice = '修改子节点名称';
-			} else {  // 若是父节点，
+			} else {
 			  this.notice = '修改父节点名称';
 			}
 			this.motifyNode = {
@@ -165,8 +166,9 @@ export default {
 				let parentId = node.parent.data.id;
 				for(let i in this.tree) {
 					if(this.tree[i].id === parentId) {
+						// 保证每个父节点至少有一个子节点
 						let childlist = this.tree[i].children;
-						if(childlist.length === 1) { // 保证每个父节点至少有一个子节点
+						if(childlist.length === 1) {
 							this.$message({
 								type: 'error',
 								message: "这里只有一个子节点了，不能删除"
@@ -185,8 +187,12 @@ export default {
 								message: res.data.message
 							});
 							self.init();
+							self.clickObj = '';
 						}).catch(function(res) {
-							console.log(res.message);
+							self.$message({
+								type: 'error',
+								message: res.data.message
+							});
 						});
 					}
 				}
@@ -209,13 +215,16 @@ export default {
 						});
 						self.init();
 					}).catch(function(res) {
-						console.log(res.message);
+						self.$message({
+							type: 'error',
+							message: res.data.message
+						});
 					});
         }).catch(() => {
-          // this.$message({
-          //   type: 'info',
-          //   message: '已取消删除'
-          // });          
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });          
         });
 			}
 		},
@@ -234,7 +243,7 @@ export default {
 			if(this.newNodeName === '') {
 				this.$message({
 					type: 'warning',
-					message: '父节点名称不能为空'
+					message: '节点名称不能为空'
 				});
 				return;
 			}
@@ -248,12 +257,18 @@ export default {
 				self.showDialog = false;
 				self.$message({
 					type: 'success',
-					message: '保存父节点名称成功'
+					message: res.data.message
 				});
+				if(self.motifyNode.isLeaf) {  // 若是子节点，则把修改后的节点名传到子组件
+					self.clickObj.label = self.motifyNode.newNodeName;
+				}
 				self.motifyNode.newNodeName = '';
 				self.init();
 			}).catch(function(res) {
-
+				self.$message({
+					type: 'error',
+					message: res.data.message
+				});
 			});
 		},
 
@@ -268,10 +283,6 @@ export default {
 		// 丢下节点
 		handleDrop(draggingNode, dropNode, dropType, ev) {
 			console.log('tree drop: ', dropNode.label, dropType);
-		  this.$message({
-				type: 'success',
-				message: '删除成功'
-			})
 		},
 		// 允许放下，这里要限制不允许放在子节点
 		allowDrop(draggingNode, dropNode, type) {
@@ -302,9 +313,6 @@ export default {
 			justify-content: space-between;
 			font-size: 14px;
 			padding-right: 8px;
-		}
-		.biggerfont {
-			font-size: 16px;
 		}
   }
 </style>

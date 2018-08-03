@@ -12,10 +12,10 @@ export default {
     return axios.get(baseUrl + '/tree', {params});
   },
   addTreeNode(params) {
-    return axios.get(baseUrl + '/addtreenode', params);
+    return axios.get(baseUrl + '/addtreenode', {params});
   },
   modifyTreeNode(params) {
-    return axios.get(baseUrl + '/modifytreenode', params);
+    return axios.get(baseUrl + '/modifytreenode', {params});
   },
   deleteTreeNode(params) {
     return axios.get(baseUrl + '/deletetreenode', {params});

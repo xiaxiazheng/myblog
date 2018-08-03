@@ -25,8 +25,9 @@ exports.getNodeCont = function(req, res) {
               id: results[0].c_id,
               list: [{
                 title: results[0].title,
-                cont: results[0].cont,
+                cont: results[0].cont.replace(/<br\/>/g, "\n"),
                 sort: results[0].sort,
+                createtime: results[0].cTime,
                 motifytime: results[0].mTime,
               }]
             };
@@ -34,8 +35,9 @@ exports.getNodeCont = function(req, res) {
           }
           contObj.list.push({
             title: results[i].title,
-            cont: results[i].cont,
+            cont: results[i].cont.replace(/<br\/>/g, "\n"),
             sort: results[i].sort,
+            createtime: results[i].cTime,
             motifytime: results[i].mTime,
           });
         }
@@ -51,7 +53,8 @@ exports.getNodeCont = function(req, res) {
 
 // 增
 exports.addNodeCont = function(req, res) {
-	var sql = "INSERT INTO cont VALUES (" + req.body.id + ", '" + Common.getNowFormatDate() + "', '请输入标题', '请输入内容'," + (req.body.sort + 1) +")";
+  let time = Common.getNowFormatDate();
+	var sql = "INSERT INTO cont VALUES (" + req.body.id + ", '" + time + "', '" + time + "', '请输入标题', '请输入内容'," + (parseInt(req.body.sort) + 1) +")";
   db.pool.getConnection(function(err, connection) {
     if(err) {
       console.log("连接数据库失败");
@@ -87,22 +90,28 @@ exports.modifyNodeCont = function(req, res) {
         console.log("查询失败");
         return;
       }
+      let isUpdate = false;
       for(let i in results1) {
         // 后判断
-        var sql2 = '';
-        if(results1[i].title !== req.body.list[i] || results1.cont !== req.body.list[i].cont) {
+        let cont = req.body.list[i].cont.replace(/\n|\r\n/g, "<br/>");  // 处理换行再对比，对比统一用<br/>
+        if(results1[i].title != req.body.list[i].title || results1[i].cont != cont) {
           // 有修改就更新
-          sql2 = "UPDATE cont SET mTime='" + Common.getNowFormatDate() + "', title=?, cont=? WHERE c_id=? && sort=?";
-          var array2 = [req.body.list[i].title, req.body.list[i].cont, req.body.id, req.body.list[i].sort];
+          var sql2 = "UPDATE cont SET mTime='" + Common.getNowFormatDate() + "', title=?, cont=? WHERE c_id=? && sort=?";
+          var array2 = [req.body.list[i].title, cont, req.body.id, req.body.list[i].sort];
           connection.query(sql2, array2, function(err, results) {
             if(err) {
               console.log("查询失败");
               return;
             }
           });
+          isUpdate = true;
         }
       }
-      res.json({ resultsCode: 'success', message: '保存成功' });
+      if(isUpdate) {
+        res.json({ resultsCode: 'success', message: '修改保存成功' });
+      } else {
+        res.json({ resultsCode: 'success', message: '当前页面无修改' });
+      }
       connection.release();
     });
   });

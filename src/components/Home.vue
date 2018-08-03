@@ -55,7 +55,6 @@ export default {
 			let isLeaf = b.isLeaf;
 			if(isLeaf) {
         this.clickObj = b.data;
-        console.log(b.data);
 			}
 		},
   }

@@ -2,10 +2,6 @@
   <div class="admincont">
 	  <div v-if="labelObj.label">
       <h1>{{labelObj.label}}</h1>
-			<h2>
-				修改时间：
-				<span v-if="contObj.list">{{contObj.list[0].motifytime}}</span>
-			</h2>
 			<!-- <span v-if="labelObj.id">{{labelObj.id}}</span> -->
 			<ul>
 				<li v-for="(item, index) in contObj.list" :key="index">
@@ -16,6 +12,13 @@
 						placeholder="请输入内容"
 						v-model="item.cont">
 					</el-input>
+					<span class="time">
+						创建时间：
+						<span>{{item.createtime}}</span>
+						&nbsp;&nbsp;&nbsp;&nbsp;
+						修改时间：
+						<span>{{item.motifytime}}</span>
+					</span>
 				</li>
 			</ul>
 			<div class="botton">
@@ -38,8 +41,8 @@ export default {
 	props: ['labelObj'],
   data() {
     return {
-			contObj: [],
-			isModify: true
+			contObj: {},
+			isModify: true,
     }
 	},
 	mounted() {
@@ -51,18 +54,11 @@ export default {
     labelObj() {
 			this.init();
 		},
-		// contObj:{ // 尝试控制修改了才能点击保存按钮
-		// 	immediate: true,
-		// 	handler: function (val,oldVal) {
-		// 		this.isModify = true;
-		// 	},
-		// 	deep:true
-		// }
 	},
 	methods: {
 		init() {
 			// this.contObj = dataObject;
-			if(this.labelObj) {
+			if(this.labelObj !== '') {
 				var self = this,
 						params = {
 							id: this.labelObj.id, // 子节点的id
@@ -70,7 +66,8 @@ export default {
 				apiUrl.getNodeCont(params).then(function(res) {
 					self.contObj = res.data;
 					// self.isModify = false;
-					// self.$watch('contObj', function(){self.isModify = true}, {deep: true});
+
+					// self.$watch('contObj',  function() { self.isModify = true; }, {deep: true});
 				}).catch(function(res) {
 					console.log(res.message);
 				});
@@ -92,7 +89,10 @@ export default {
 					// self.isModify = false;
 					// self.$watch('contObj', function(){self.isModify = true}, {deep: true});
 				}).catch(function(res) {
-					console.log(res.message);
+					self.$message({
+						type: "error",
+						message: res.data.message
+					});
 				});
 		},
 		// 先判断判断
@@ -112,14 +112,14 @@ export default {
 		saveModify() {
 			var self = this,
 					params = this.contObj;
-			console.log("params");
-			console.log(params);
 			apiUrl.modifyNodeCont(params).then(function(res) {
 				self.$message({
 					type: "success",
 					message: res.data.message
 				});
-				self.init();
+				setTimeout(function() {
+					self.init();
+				}, 1000);
 			}).catch(function(res) {
 				self.$message({
 					type: "error",
@@ -131,7 +131,6 @@ export default {
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less">
   .admincont {
 		text-align: left;
@@ -139,11 +138,20 @@ export default {
     h1 {
       margin-bottom: 10px;
 		}
-		.el-input {
-			margin-top: 10px;
-		}
-		.el-textarea {
-			margin-top: 10px;
+		ul {
+			li {
+				text-align: right;
+				margin-top: 5px;
+				.el-input {
+					margin-top: 10px;
+				}
+				.el-textarea {
+					margin-top: 10px;
+				}
+				.time {
+					color: #ccc;
+				}
+			}
 		}
 		.botton {
 			margin-top: 20px;

@@ -64,7 +64,7 @@ exports.addTreeNode = function(req, res) {
     var sql = '';
     var newchildId = Common.getRandomNum();
     if(req.query.isLeaf === 'false') { // 若是父节点
-      sql = "INSERT INTO tree VALUES (" + Common.getRandomNum() + ", 'newNode', " + (req.query.sort + 1) + ", " + newchildId + ", 'newChildNode', " + 1 + ")";
+      sql = "INSERT INTO tree VALUES (" + Common.getRandomNum() + ", 'newNode', " + (parseInt(req.query.sort) + 1) + ", " + newchildId + ", 'newChildNode', " + 1 + ")";
     } else { // 若是子节点
       sql = "INSERT INTO tree VALUES (" + req.query.id + ", '" + req.query.label + "', " + req.query.f_sort + ", " + newchildId + ", 'newChildNode', " + (req.query.c_sort + 1) + ")";
     }
@@ -74,7 +74,8 @@ exports.addTreeNode = function(req, res) {
         console.log("查询失败1");
         return;
       }
-      var sql1 = "INSERT INTO cont VALUES(" + newchildId + ", '" + Common.getNowFormatDate() + "', '标题一', '内容一', 1)";
+      let time = Common.getNowFormatDate();
+      var sql1 = "INSERT INTO cont VALUES(" + newchildId + ", '" + time + "', '" + time + "', '标题一', '内容一', 1)";
       var array1 = [];
       connection.query(sql1, array1, function(err, results) {
         if(err) {
@@ -97,7 +98,7 @@ exports.modifyTreeNode = function(req, res) {
       return;
     }
     var sql = '';
-    if(req.query.isLeaf) {
+    if(req.query.isLeaf === 'true') {
       sql = "UPDATE tree SET c_label=? WHERE c_id=?";
     } else {
       sql = "UPDATE tree SET f_label=? WHERE f_id=?";
