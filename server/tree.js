@@ -97,12 +97,13 @@ exports.modifyTreeNode = function(req, res) {
       console.log(err);
       return;
     }
-    var sql = '';
+    var flag = '';
     if(req.query.isLeaf === 'true') {
-      sql = "UPDATE tree SET c_label=? WHERE c_id=?";
+      flag = 'c';
     } else {
-      sql = "UPDATE tree SET f_label=? WHERE f_id=?";
+      flag = 'f';
     }
+    var sql = "UPDATE tree SET " + flag + "_label=? WHERE " + flag + "_id=?";
     var array = [req.query.label, req.query.id];
     connection.query(sql, array, function(err, results) {
       if(err) {
@@ -178,5 +179,41 @@ exports.deleteTreeNode = function(req, res) {
         connection.release();
       });
     }
+  });
+};
+
+
+// 交换顺序，上移或下移
+exports.changeSort = function(req, res) {
+  db.pool.getConnection(function(err, connection) {
+    if(err) {
+      console.log("连接数据库失败");
+      console.log(err);
+      return;
+    }
+    var flag = '';
+    if(req.query.isLeaf === 'true') {
+      flag = 'c';
+    } else {
+      flag = 'f';
+    }
+    var sql1 = "UPDATE tree SET " + flag + "_sort=? WHERE " + flag + "_id=?";
+      var array1 = [req.query.otherSort, req.query.thisId];
+      connection.query(sql1, array1, function(err, results) {
+        if(err) {
+          console.log("查询失败");
+          return;
+        }
+        var sql2 = "UPDATE tree SET " + flag + "_sort=? WHERE " + flag + "_id=?";
+        var array2 = [req.query.thisSort, req.query.otherId];
+        connection.query(sql2, array2, function(err, results) {
+          if(err) {
+            console.log("查询失败");
+            return;
+          }
+          res.json({ resultsCode: 'success', message: '移动成功' })
+          connection.release();
+        });
+      });
   });
 };

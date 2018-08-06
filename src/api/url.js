@@ -20,6 +20,9 @@ export default {
   deleteTreeNode(params) {
     return axios.get(baseUrl + '/deletetreenode', {params});
   },
+  changeSort(params) {
+    return axios.get(baseUrl + '/changesort', {params});
+  },
   /** 操作子节点内容 */
   getNodeCont(params) {
     return axios.get(baseUrl + '/cont', {params});
