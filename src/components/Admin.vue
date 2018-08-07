@@ -7,6 +7,7 @@
 				:props="defaultProps"
 				node-key="id"
 				default-expand-all
+				:highlight-current="true"
 				@node-click="handleClick"
 				:expand-on-click-node="false">
 				<span class="custom-tree-node" slot-scope="{ node, data }" @mouseover="showIcon(node)" @mouseout="hideIcon(node)">

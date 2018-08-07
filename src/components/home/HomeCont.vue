@@ -17,7 +17,7 @@
 			</ul>
 		</div>
 		<div v-else>
-			<h1>Welcome !</h1>
+			<h1>Wlcome !</h1>
 		</div>
   </div>
 </template>
@@ -55,11 +55,12 @@ export default {
 					self.contObj = res.data;
 					for(let i in self.contObj.list) {
 						self.contObj.list[i].cont = self.contObj.list[i].cont.replace(/</g, "&lt;"); // html标签的<转成实体字符,让所有的html标签失效
-						self.contObj.list[i].cont = self.contObj.list[i].cont.replace(/&lt;pre/g, "<pre"); // 把pre标签转回来
+						self.contObj.list[i].cont = self.contObj.list[i].cont.replace(/&lt;pre/g, "<pre");  // 把pre标签转回来
+						self.contObj.list[i].cont = self.contObj.list[i].cont.replace(/pre>\n/g, "pre>");       // 去掉pre标签后面的换行
 						self.contObj.list[i].cont = self.contObj.list[i].cont.replace(/&lt;\/pre>/g, "</pre>"); // 把pre结束标签转回来
-						self.contObj.list[i].cont = self.contObj.list[i].cont.replace(/>\n/g, ">");
-						self.contObj.list[i].cont = self.contObj.list[i].cont.replace(/  /g, "&nbsp;&nbsp;"); // 把空格转成实体字符，以防多空格被合并
-						self.contObj.list[i].cont = self.contObj.list[i].cont.replace(/\n|\r\n/g, "<br/>"); // 把换行转成br标签
+						self.contObj.list[i].cont = self.contObj.list[i].cont.replace(/\/pre>\n/g, "/pre>");    // 去掉pre结束标签后面的换行
+						self.contObj.list[i].cont = self.contObj.list[i].cont.replace(/  /g, "&nbsp;&nbsp;");   // 把空格转成实体字符，以防多空格被合并
+						self.contObj.list[i].cont = self.contObj.list[i].cont.replace(/\n|\r\n/g, "<br/>");     // 把换行转成br标签
 					}
 				}).catch(function(res) {
 					console.log(res.message);
@@ -82,6 +83,7 @@ export default {
 		}
 		h2 {
 			padding-bottom: .3rem;
+			margin-bottom: .3rem;
 			border-bottom: 1px solid #eaecef;
 			position: relative;
 			>span {
