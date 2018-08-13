@@ -12,13 +12,38 @@
 						placeholder="请输入内容"
 						v-model="item.cont">
 					</el-input>
-					<span class="time">
-						创建时间：
-						<span>{{item.createtime}}</span>
-						&nbsp;&nbsp;&nbsp;&nbsp;
-						修改时间：
-						<span>{{item.motifytime}}</span>
-					</span>
+					<div class="ctrlbox">
+						<span class="iconbox">
+							<el-button
+								type="text"
+								size="mini"
+								@click="() => upCont(item, index)"
+								v-if="index !== 0">
+								<i class="el-icon-arrow-up"></i>
+							</el-button>
+							<el-button
+								type="text"
+								size="mini"
+								@click="() => downCont(item, index)"
+								v-if="index !== contObj.list.length - 1">
+								<i class="el-icon-arrow-down"></i>
+							</el-button>
+							<el-button
+								type="text"
+								size="mini"
+								@click="() => deleteCont(item, index)"
+								v-if="contObj.list.length > 1">
+								<i class="el-icon-delete"></i>	
+							</el-button>
+						</span>
+						<span class="time">
+							创建时间：
+							<span>{{item.createtime}}</span>
+							&nbsp;&nbsp;&nbsp;&nbsp;
+							修改时间：
+							<span>{{item.motifytime}}</span>
+						</span>
+					</div>
 				</li>
 			</ul>
 			<div class="botton">
@@ -95,6 +120,73 @@ export default {
 				});
 			});
 		},
+		// 删除节点
+		deleteCont(item, index) {
+			this.$confirm('你将删除“' + item.title + '”, 你确定?', '提示', {
+				confirmButtonText: '确定',
+				cancelButtonText: '取消',
+				type: 'warning'
+			}).then(() => { 
+				var self = this,
+						params = {
+							id: this.labelObj.id, // 子节点的id
+							sort: item.sort,
+						};
+				apiUrl.deleteNodeCont(params).then(function(res) {
+					self.$message({
+						type: "success",
+						message: '删除成功'
+					});
+					// self.contObj.list.splice(index, 1);
+					self.init();
+				}).catch(function(res) {
+					self.$message({
+						type: "error",
+						message: res
+					});
+				});
+			}).catch(() => {
+				console.log("已取消");
+			});
+		},
+		// 上移节点
+		upCont(item, index) {
+			var self = this,
+					params = {
+						thiscTime: item.createtime,
+						thisSort: item.sort,
+						othercTime: this.contObj.list[index - 1].createtime,
+						otherSort: this.contObj.list[index - 1].sort
+					};
+			apiUrl.changeContSort(params).then(function(res) {
+				self.$message({
+					type: 'success',
+					message: '上移成功'
+				});
+				self.init();
+			}).catch(function(res) {
+				console.log(res.data.message);
+			});
+		},
+		// 下移节点
+		downCont(item, index) {
+			var self = this,
+					params = {
+						thiscTime: item.createtime,
+						thisSort: item.sort,
+						othercTime: this.contObj.list[index + 1].createtime,
+						otherSort: this.contObj.list[index + 1].sort
+					};
+			apiUrl.changeContSort(params).then(function(res) {
+				self.$message({
+					type: 'success',
+					message: '下移成功'
+				});
+				self.init();
+			}).catch(function(res) {
+				console.log(res.data.message);
+			});
+		},
 		// 先判断判断
 		judge() {
 			for(let item of this.contObj.list) {
@@ -148,8 +240,18 @@ export default {
 				.el-textarea {
 					margin-top: 10px;
 				}
-				.time {
-					color: #ccc;
+				.ctrlbox {
+					position: relative;
+					overflow: hidden;
+					.iconbox {
+						position: absolute;
+						left: 0;
+						top: -5px;
+					}
+					.time {
+						float: right;
+						color: #ccc;
+					}
 				}
 			}
 		}

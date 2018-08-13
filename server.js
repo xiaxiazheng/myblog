@@ -67,6 +67,9 @@ app.get('/', function(req, res) {
 	app.get('/deletenodecont', function(req, res) {
 		cont.deleteNodeCont(req, res);
 	});
+	app.get('/changecontsort', function(req, res) {
+		cont.changeSort(req, res);
+	});
 // app.get()
 /* 结束 */
 

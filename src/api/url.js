@@ -36,4 +36,7 @@ export default {
   deleteNodeCont(params) {
     return axios.get(baseUrl + '/deletenodecont', {params});
   },
+  changeContSort(params) {
+    return axios.get(baseUrl + '/changecontsort', {params});
+  }
 }

@@ -7,7 +7,6 @@
 				:props="defaultProps"
 				node-key="id"
 				default-expand-all
-				:highlight-current="true"
 				@node-click="handleClick"
 				:expand-on-click-node="false">
 				<span class="custom-tree-node" slot-scope="{ node, data }" @mouseover="showIcon(node)" @mouseout="hideIcon(node)">
@@ -227,48 +226,41 @@ export default {
     // 删除节点
 		remove(node, data) {
 			if(node.isLeaf) { // 若是叶子节点
-				console.log(node);
-				this.$confirm('你将删除' + node.parent.data.label + '的子节点' + data.label + ', 你确定?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => { 
-					let parentId = node.parent.data.id;
-					for(let i in this.tree) {
-						if(this.tree[i].id === parentId) {
-							// 保证每个父节点至少有一个子节点
-							let childlist = this.tree[i].children;
-							if(childlist.length === 1) {
-								this.$message({
-									type: 'error',
-									message: "删除失败！这里只有一个子节点了，不能删除！"
-								});
-								return;
-							}
-							// 删除子节点
-							var self = this,
-									params = {
-										id: data.id,
-										isLeaf: node.isLeaf
-									};
-							apiUrl.deleteTreeNode(params).then(function(res) {
-								self.$message({
-									type: 'success',
-									message: res.data.message
-								});
-								self.init();
-								self.clickObj = '';
-							}).catch(function(res) {
-								self.$message({
-									type: 'error',
-									message: res.data.message
-								});
+				let parentId = node.parent.data.id;
+				for(let i in this.tree) {
+					if(this.tree[i].id === parentId) {
+						// 保证每个父节点至少有一个子节点
+						let childlist = this.tree[i].children;
+						if(childlist.length === 1) {
+							this.$message({
+								type: 'error',
+								message: "这里只有一个子节点了，不能删除"
 							});
+							return;
 						}
+						// 删除子节点
+						var self = this,
+								params = {
+									id: data.id,
+									isLeaf: node.isLeaf
+								};
+						apiUrl.deleteTreeNode(params).then(function(res) {
+							self.$message({
+								type: 'success',
+								message: res.data.message
+							});
+							self.init();
+							self.clickObj = '';
+						}).catch(function(res) {
+							self.$message({
+								type: 'error',
+								message: res.data.message
+							});
+						});
 					}
-				});
+				}
 			} else { // 若是父节点，就慎重一点
-			  this.$confirm('你将删除父节点' + data.label + ', 你确定?', '提示', {
+			  this.$confirm('你将删除的是父节点, 你确定?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'

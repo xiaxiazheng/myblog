@@ -6,7 +6,6 @@
         :props="defaultProps"
         @node-click="handleClick"
 				node-key="id"
-        :highlight-current="true"
 				accordion>
 			</el-tree>
 		</div>
@@ -33,7 +32,7 @@ export default {
       defaultProps: {
 				children: 'children',
 				label: 'label'
-      },
+			}
     }
   },
   mounted() {
