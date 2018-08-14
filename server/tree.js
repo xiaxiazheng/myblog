@@ -66,7 +66,7 @@ exports.addTreeNode = function(req, res) {
     if(req.query.isLeaf === 'false') { // 若是父节点
       sql = "INSERT INTO tree VALUES (" + Common.getRandomNum() + ", 'newNode', " + (parseInt(req.query.sort) + 1) + ", " + newchildId + ", 'newChildNode', " + 1 + ")";
     } else { // 若是子节点
-      sql = "INSERT INTO tree VALUES (" + req.query.id + ", '" + req.query.label + "', " + req.query.f_sort + ", " + newchildId + ", 'newChildNode', " + (req.query.c_sort + 1) + ")";
+      sql = "INSERT INTO tree VALUES (" + req.query.id + ", '" + req.query.label + "', " + req.query.f_sort + ", " + newchildId + ", 'newChildNode', " + (parseInt(req.query.c_sort) + 1) + ")";
     }
     var array = [];
     connection.query(sql, array, function(err, results) {

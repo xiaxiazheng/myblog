@@ -218,6 +218,11 @@ export default {
 						message: res.data.message
 					})
 					self.init();
+				} else {
+					self.$message({
+						type: 'error',
+						message: res.data.message
+					})
 				}
 			}).catch(function(res) {
 				console.log(res.message);

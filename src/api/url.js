@@ -1,6 +1,9 @@
 import axios from 'axios'
 // 后台启动的服务地址
+// 本地
 const baseUrl = 'http://localhost:3000'
+// 服务器
+// const baseUrl = '123,207,5,131:80
 
 export default {
   /** 登录 */

@@ -96,11 +96,17 @@ app.get('*', function(req, res) {
 });
 
 // 起服务
+// 本地
 var server = app.listen(3000, 'localhost', function () {
   var host = server.address().address;
   var port = server.address().port;
   console.log('Graduation app listening at http://%s:%s', host, port);
 });
+// 服务器端
+// var server = app.listen(80, function () {
+// 	var port = server.address().port;
+// 	console.log('Graduation app listening at http://%s:%s', host, port);
+// });
 
 // 获取文件类型, element的字体类型暂时没办法
 function getType(endTag){
