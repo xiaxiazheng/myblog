@@ -118,23 +118,52 @@ exports.modifyNodeCont = function(req, res) {
 };
 
 // 删
-// exports.deleteNodeCont = function(req, res) {
-// 	var sql = "DELETE * FROM cont WHERE c_id=?";
-//   db.pool.getConnection(function(err, connection) {
-//     if(err) {
-//       console.log("连接数据库失败");
-//       console.log(err);
-//       return;
-//     }
-//     var array = [req.query.id];
-//     connection.query(sql, array, function(err, results) {
-//       if(err) {
-//         res.json({ resultsCode: 'error', message: err.message })
-//         return;
-//       }
-//       res.json({ resultsCode: 'success', message: '删除成功' })
+exports.deleteNodeCont = function(req, res) {
+  db.pool.getConnection(function(err, connection) {
+    if(err) {
+      console.log("连接数据库失败");
+      console.log(err);
+      return;
+    }
+    var sql = "DELETE FROM cont WHERE c_id=? && sort=?";
+    var array = [req.query.id, req.query.sort];
+    connection.query(sql, array, function(err, results) {
+      if(err) {
+        res.json({ resultsCode: 'error', message: err.message })
+        return;
+      }
+      res.json({ resultsCode: 'success', message: '删除成功' })
 
-//       connection.release();
-//     });
-//   });
-// };
+      connection.release();
+    });
+  });
+};
+
+// 交换顺序，上移或下移
+exports.changeSort = function(req, res) {
+  db.pool.getConnection(function(err, connection) {
+    if(err) {
+      console.log("连接数据库失败");
+      console.log(err);
+      return;
+    }
+    var sql1 = "UPDATE cont SET sort=? WHERE cTime=?";
+      var array1 = [req.query.otherSort, req.query.thiscTime];
+      connection.query(sql1, array1, function(err, results) {
+        if(err) {
+          console.log("查询失败");
+          return;
+        }
+        var sql2 = "UPDATE cont SET sort=? WHERE cTime=?";
+        var array2 = [req.query.thisSort, req.query.othercTime];
+        connection.query(sql2, array2, function(err, results) {
+          if(err) {
+            console.log("查询失败");
+            return;
+          }
+          res.json({ resultsCode: 'success', message: '移动成功' })
+          connection.release();
+        });
+      });
+  });
+};

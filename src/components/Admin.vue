@@ -7,17 +7,25 @@
 				:props="defaultProps"
 				node-key="id"
 				default-expand-all
-				@node-drag-start="handleDragStart"
-				@node-drag-end="handleDragEnd"
-				@node-drop="handleDrop"
 				@node-click="handleClick"
-				draggable
-				:allow-drop="allowDrop"
-				:allow-drag="allowDrag"
 				:expand-on-click-node="false">
-				<span class="custom-tree-node" slot-scope="{ node, data }">
+				<span class="custom-tree-node" slot-scope="{ node, data }" @mouseover="showIcon(node)" @mouseout="hideIcon(node)">
 					<span>{{ node.label }}</span>
-					<span>
+					<span class="iconBox" v-if="node.data.hovering">
+						<el-button
+							type="text"
+							size="mini"
+							@click="() => up(node, data)"
+							v-if="node.previousSibling">
+							<i class="el-icon-arrow-up"></i>
+						</el-button>
+						<el-button
+							type="text"
+							size="mini"
+							@click="() => down(node, data)"
+							v-if="node.nextSibling">
+							<i class="el-icon-arrow-down"></i>
+						</el-button>
 						<el-button
 							type="text"
 							size="mini"
@@ -61,6 +69,7 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import AdminCont from './admin/AdminCont'
 import apiUrl from '@/api/url.js'
 // import { treeData } from '@/mock.js'
@@ -97,12 +106,69 @@ export default {
 		init() {
 			var self = this,
           params = {};
-      // this.tree = treeData;
       apiUrl.getTree(params).then(function(res) {
 				self.tree = res.data;
+				// 给树设置属性
+				for(let i in self.tree) {
+					// hovering
+					Vue.set(self.tree[i], 'hovering', false);
+					for(let j in self.tree[i].children) {
+						Vue.set(self.tree[i].children[j], 'hovering', false);
+					}
+				}
       }).catch(function(res) {
-        console.log(res.message);
+        console.log(res.data.message);
       });
+		},
+
+		//onmouseover时显示图标
+    showIcon(item) {
+      item.data.hovering = true;
+    },
+    //onmouseout时隐藏图标
+    hideIcon(item) {
+      item.data.hovering = false;
+		},
+		
+		// 上移
+		up(node, data) {
+			var self = this,
+					params = {
+						isLeaf: node.isLeaf,
+						thisId: node.data.id,
+						thisSort: node.data.sort,
+						otherId: node.previousSibling.data.id,
+						otherSort: node.previousSibling.data.sort
+					};
+			apiUrl.changeSort(params).then(function(res) {
+				self.$message({
+					type: 'success',
+					message: '上移成功'
+				});
+				self.init();
+			}).catch(function(res) {
+				console.log(res.data.message);
+			});
+		},
+		// 下移
+		down(node, data) {
+			var self = this,
+					params = {
+						isLeaf: node.isLeaf,
+						thisId: node.data.id,
+						thisSort: node.data.sort,
+						otherId: node.nextSibling.data.id,
+						otherSort: node.nextSibling.data.sort
+					};
+			apiUrl.changeSort(params).then(function(res) {
+				self.$message({
+					type: 'success',
+					message: '下移成功'
+				});
+				self.init();
+			}).catch(function(res) {
+				console.log(res.data.message);
+			});
 		},
 
 		// 点击节点，三个参数分别为传递给 data 属性的数组中该节点所对应的对象、节点对应的 Node、节点组件本身。
@@ -110,9 +176,6 @@ export default {
 			let isLeaf = node.isLeaf;
 			if(isLeaf) { // 若是子节点则右边显示具体信息
 				this.clickObj = node.data;
-				// 备份一下
-				this.nowChildNode.isLeaf = node.isLeaf;
-			  this.nowChildNode.data = node.data;
 			}
 		},
 
@@ -155,6 +218,11 @@ export default {
 						message: res.data.message
 					})
 					self.init();
+				} else {
+					self.$message({
+						type: 'error',
+						message: res.data.message
+					})
 				}
 			}).catch(function(res) {
 				console.log(res.message);
@@ -271,31 +339,6 @@ export default {
 				});
 			});
 		},
-
-		// 拖动开始
-		handleDragStart(node, ev) {
-			console.log('drag start', node);
-		},
-    // 拖动结束
-		handleDragEnd(draggingNode, dropNode, dropType, ev) {
-			console.log('tree drag end: ', dropNode && dropNode.label, dropType);
-		},
-		// 丢下节点
-		handleDrop(draggingNode, dropNode, dropType, ev) {
-			console.log('tree drop: ', dropNode.label, dropType);
-		},
-		// 允许放下，这里要限制不允许放在子节点
-		allowDrop(draggingNode, dropNode, type) {
-			if (dropNode.data.label === '二级 3-1') {
-				return type !== 'inner';
-			} else {
-				return true;
-			}
-		},
-		// 允许拖动，这里要限制父节点不准拖动
-		allowDrag(draggingNode) {
-			return draggingNode.data.label.indexOf('三级 3-2-2') === -1;
-		},
   },
 }
 </script>
@@ -313,6 +356,10 @@ export default {
 			justify-content: space-between;
 			font-size: 14px;
 			padding-right: 8px;
+			.iconBox {
+				position: absolute;
+    		right: 13px;
+			}
 		}
   }
 </style>

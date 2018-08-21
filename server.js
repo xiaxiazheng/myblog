@@ -50,6 +50,9 @@ app.get('/', function(req, res) {
 	app.get('/deletetreenode', function(req, res) {
 		tree.deleteTreeNode(req, res);
 	});
+	app.get('/changesort', function(req, res) {
+		tree.changeSort(req, res);
+	});
 	// 操作子节点
 	var cont = require('./server/cont.js');
 	app.get('/cont', function(req, res) {
@@ -63,6 +66,9 @@ app.get('/', function(req, res) {
 	});
 	app.get('/deletenodecont', function(req, res) {
 		cont.deleteNodeCont(req, res);
+	});
+	app.get('/changecontsort', function(req, res) {
+		cont.changeSort(req, res);
 	});
 // app.get()
 /* 结束 */
@@ -90,11 +96,17 @@ app.get('*', function(req, res) {
 });
 
 // 起服务
+// 本地
 var server = app.listen(3000, 'localhost', function () {
   var host = server.address().address;
   var port = server.address().port;
   console.log('Graduation app listening at http://%s:%s', host, port);
 });
+// 服务器端
+// var server = app.listen(80, function () {
+// 	var port = server.address().port;
+// 	console.log('Graduation app listening at http://%s:%s', host, port);
+// });
 
 // 获取文件类型, element的字体类型暂时没办法
 function getType(endTag){
