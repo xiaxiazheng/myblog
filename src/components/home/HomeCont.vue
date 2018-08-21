@@ -57,7 +57,7 @@ export default {
 						self.contObj.list[i].cont = self.contObj.list[i].cont.replace(/</g, "&lt;"); // html标签的<转成实体字符,让所有的html标签失效
 						self.contObj.list[i].cont = self.contObj.list[i].cont.replace(/&lt;pre/g, "<pre"); // 把pre标签转回来
 						self.contObj.list[i].cont = self.contObj.list[i].cont.replace(/&lt;\/pre>/g, "</pre>"); // 把pre结束标签转回来
-						self.contObj.list[i].cont = self.contObj.list[i].cont.replace(/pre>\n/g, "pre>");
+						self.contObj.list[i].cont = self.contObj.list[i].cont.replace(/>\n/g, ">");
 						self.contObj.list[i].cont = self.contObj.list[i].cont.replace(/  /g, "&nbsp;&nbsp;"); // 把空格转成实体字符，以防多空格被合并
 						self.contObj.list[i].cont = self.contObj.list[i].cont.replace(/\n|\r\n/g, "<br/>"); // 把换行转成br标签
 					}
@@ -81,10 +81,9 @@ export default {
 			padding-right: 20px;
 		}
 		h2 {
-			padding-bottom: .2rem;
+			padding-bottom: .3rem;
 			border-bottom: 1px solid #eaecef;
 			position: relative;
-			margin-bottom: .2rem;
 			>span {
 				position: absolute;
 				right: 0;
@@ -109,7 +108,7 @@ export default {
 			// color: white;
 			// background-color: #23241f;
 			overflow-x: auto;
-			padding: .7rem 1.5rem;
+			padding: 3px 1rem;
       white-space: pre;
 			word-wrap: normal;
 			border: 1px solid black;
