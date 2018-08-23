@@ -7,7 +7,7 @@
 				<li v-for="(item, index) in contObj.list" :key="index">
 					<h2>
 						{{item.title}}
-						<span v-if="contObj.list">
+						<span v-if="contObj.list && isPC">
 							修改时间：
 							<span>{{item.motifytime}}</span>
 						</span>
@@ -27,7 +27,7 @@ import apiUrl from '@/api/url.js'
 // import { dataObject } from '@/mock.js'
 
 export default {
-	props: ['labelObj'],
+	props: ['labelObj', 'isPC'],
   data() {
     return {
       contObj: []

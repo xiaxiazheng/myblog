@@ -1,17 +1,41 @@
 <template>
   <div class="home"><!-- 这是前端展示页面的主Vue -->
-    <div class="lefttree">
-      <el-tree
-				:data="tree"
-        :props="defaultProps"
-        @node-click="handleClick"
-				node-key="id"
-				accordion>
-			</el-tree>
-		</div>
-		<div class="rightcont">
-      <HomeCont :label-obj="clickObj"></HomeCont>
-		</div>
+    <div v-if="isPC" class="PC">
+      <div class="lefttree">
+        <el-tree
+          :data="tree"
+          :props="defaultProps"
+          @node-click="handleClick"
+          node-key="id"
+          accordion>
+        </el-tree>
+      </div>
+      <div class="rightcont">
+        <HomeCont :label-obj="clickObj"></HomeCont>
+      </div>
+    </div>
+    <div v-else class="Mobile">
+      <div class="topMobile">
+        <el-button 
+          type="primary" 
+          icon="el-icon-edit"
+          @click="isShowTree">
+        </el-button>
+        <h1>{{ title }}</h1>
+      </div>
+      <div class="leftMobile" v-show="showTree">
+        <el-tree
+          :data="tree"
+          :props="defaultProps"
+          @node-click="handleClick"
+          node-key="id"
+          accordion>
+        </el-tree>
+      </div>
+      <div class="rightMobile">
+        <HomeCont :label-obj="clickObj" :isPC="isPC"></HomeCont>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -32,7 +56,10 @@ export default {
       defaultProps: {
 				children: 'children',
 				label: 'label'
-			}
+      },
+      isPC: false,
+      showTree: false,
+      title: '虾虾郑的个人空间'
     }
   },
   mounted() {
@@ -42,6 +69,9 @@ export default {
   },
   methods: {
     init() {
+      if(window.screen.width > 600) {
+        this.isPC = true;
+      }
       var self = this,
           params = {};
       // this.tree = treeData;
@@ -55,8 +85,13 @@ export default {
 			let isLeaf = b.isLeaf;
 			if(isLeaf) {
         this.clickObj = b.data;
-			}
-		},
+        this.showTree = false;
+        this.title = b.data.label;
+      }
+    },
+    isShowTree() {
+      this.showTree = !this.showTree;
+    },
   }
 }
 </script>
@@ -67,5 +102,47 @@ export default {
 
   .home {
     height: 100%;
+    .PC {
+      height: 100%;
+    }
+    .Mobile {
+      .topMobile {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        height: 2.5rem;
+        border-bottom: 1px solid #ccc;
+        background-color: white;
+        text-align: left;
+        .el-button {
+          width: 3.5rem;
+          height: 2.5rem;
+          margin-right: .4rem;
+          text-align: center;
+          vertical-align: middle;
+        }
+        h1 {
+          display: inline-block;
+          vertical-align: middle;
+        }
+      }
+      .leftMobile {
+        height: calc(100% - 2rem);
+        position: fixed;
+        top: 2.5rem;
+        width: 60%;
+        background-color: white;
+        border: 1px solid #ccc;
+        overflow: hidden;
+        z-index: 2;
+      }
+      .rightMobile {
+        position: fixed;
+        top: 2.5rem;
+        height: calc(100% - 2rem);
+        width: 100%;
+        overflow-y: auto;
+      }
+    }
   }
 </style>

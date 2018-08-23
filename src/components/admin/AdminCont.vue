@@ -8,7 +8,7 @@
 					<el-input v-model="item.title" placeholder="请输入内容"></el-input>
           <el-input
 						type="textarea"
-						:autosize="{ minRows: 3, maxRows: 8}"
+						:autosize="{ minRows: 3, maxRows: 15}"
 						placeholder="请输入内容"
 						v-model="item.cont">
 					</el-input>
