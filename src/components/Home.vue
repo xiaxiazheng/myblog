@@ -130,11 +130,11 @@ export default {
         height: calc(100% - 2rem);
         position: fixed;
         top: 2.5rem;
-        width: 60%;
+        width: 65%;
         background-color: white;
         border: 1px solid #ccc;
-        overflow: hidden;
         z-index: 2;
+        overflow-y: auto;
       }
       .rightMobile {
         position: fixed;

@@ -105,7 +105,7 @@ var server = app.listen(3000, 'localhost', function () {
 // 服务器端
 // var server = app.listen(80, function () {
 // 	var port = server.address().port;
-// 	console.log('Graduation app listening at http://%s:%s', host, port);
+// 	console.log('Graduation app listening at http://123.207.5.131:%s', port);
 // });
 
 // 获取文件类型, element的字体类型暂时没办法
