@@ -1,11 +1,13 @@
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 module.exports = {
   configureWebpack: {
     plugins: [
-      // new MyAwesomeWebpackPlugin()
+      new BundleAnalyzerPlugin()  // 这个如果不是要打包查看打包情况的话还是注释掉吧
     ],
     externals:{
       'vue': 'Vue',
-      'ELEMENT': 'element-ui'
+      'ELEMENT': 'element-ui',
+      'VueRouter': 'VueRouter'
     }
   }
 }

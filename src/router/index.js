@@ -1,7 +1,7 @@
-import Router from 'vue-router'
-Vue.use(Router)
+// import VueRouter from 'vue-router'
+// Vue.use(VueRouter)
 
-export default new Router({
+export default new VueRouter({
   routes: [
 		{
 			path: '/',

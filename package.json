@@ -5,7 +5,8 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "analyz": "set NODE_ENV=production && set npm_config_report=true && npm run build"
   },
   "dependencies": {
     "axios": "^0.18.0",
@@ -24,7 +25,8 @@
     "@vue/cli-service": "^3.0.0-rc.5",
     "body-parser": "^1.18.3",
     "file-loader": "^1.1.11",
-    "vue-template-compiler": "^2.5.16"
+    "vue-template-compiler": "^2.5.16",
+    "webpack-bundle-analyzer": "^2.13.1"
   },
   "eslintConfig": {
     "root": true,
