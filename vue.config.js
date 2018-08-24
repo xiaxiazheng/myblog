@@ -2,7 +2,7 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPl
 module.exports = {
   configureWebpack: {
     plugins: [
-      new BundleAnalyzerPlugin()  // 这个如果不是要打包查看打包情况的话还是注释掉吧
+      // new BundleAnalyzerPlugin()  // 这个如果不是要打包查看打包情况的话还是注释掉吧
     ],
     externals:{
       'vue': 'Vue',

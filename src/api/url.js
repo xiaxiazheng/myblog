@@ -26,6 +26,9 @@ export default {
   changeSort(params) {
     return axios.get(baseUrl + '/changesort', {params});
   },
+  changeFather(params) {
+    return axios.get(baseUrl + '/changefather', {params});
+  },
   /** 操作子节点内容 */
   getNodeCont(params) {
     return axios.get(baseUrl + '/cont', {params});

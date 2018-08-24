@@ -53,6 +53,9 @@ app.get('/', function(req, res) {
 	app.get('/changesort', function(req, res) {
 		tree.changeSort(req, res);
 	});
+	app.get('/changefather', function(req, res) {
+		tree.changeFather(req, res);
+	});
 	// 操作子节点
 	var cont = require('./server/cont.js');
 	app.get('/cont', function(req, res) {

@@ -41,6 +41,13 @@
 						<el-button
 							type="text"
 							size="mini"
+							@click="() => shuttle(node, data)"
+							v-if="node.isLeaf">
+							<i class="el-icon-upload"></i>
+						</el-button>
+						<el-button
+							type="text"
+							size="mini"
 							@click="() => remove(node, data)">
 							<i class="el-icon-delete"></i>	
 						</el-button>
@@ -55,7 +62,7 @@
 		<!-- 修改节点名称的dialog -->
 		<el-dialog
 			title="提示"
-			:visible.sync="showDialog"
+			:visible.sync="showEditDialog"
 			width="30%"
 			:before-close="handleCloseDialog">
 			<span>{{notice}}</span>
@@ -63,6 +70,26 @@
 			<span slot="footer" class="dialog-footer">
 				<el-button @click="handleCloseDialog">取 消</el-button>
 				<el-button type="primary" @click="handleSaveNode">确 定</el-button>
+			</span>
+		</el-dialog>
+		<!-- 穿梭更换父节点的dialog -->
+		<el-dialog
+			title="提示"
+			:visible.sync="showShuttleDialog"
+			width="30%"
+			:before-close="handleCloseDialog">
+			<span>请选择你要穿梭的父节点：</span>
+			<el-select v-model="choiceFathId">
+				<el-option
+					v-for="(item, index) in fatherNodeList"
+					:key="index"
+					:label="item.label"
+					:value="item.id">
+				</el-option>
+			</el-select>
+			<span slot="footer" class="dialog-footer">
+				<el-button @click="handleCloseDialog">取 消</el-button>
+				<el-button type="primary" @click="handleSaveShuttle">确 定</el-button>
 			</span>
 		</el-dialog>
   </div>
@@ -83,18 +110,25 @@ export default {
 		return {
 			clickObj: '', // 传给子组件的，包括子节点的id和label
 			tree: [],
+			fatherNodeList: [], // 所有的父节点
 			newChildLabel: '',
 			defaultProps: {
 				children: 'children',
 				label: 'label'
 			},
-			showDialog: false,
+			// 节点改名
+			showEditDialog: false,
 			motifyNode: {
 				id: '',
 				newNodeName: '',
 				isLeaf: ''
 			},
 			notice: '',
+			// 子节点穿梭
+			showShuttleDialog: false,
+			originFathId: '',
+			choiceFathId: '',
+			shuttleChildId: '',
 		};
 	},
 	mounted() {
@@ -108,6 +142,7 @@ export default {
           params = {};
       apiUrl.getTree(params).then(function(res) {
 				self.tree = res.data;
+				self.fatherNodeList = [];
 				// 给树设置属性
 				for(let i in self.tree) {
 					// hovering
@@ -115,9 +150,14 @@ export default {
 					for(let j in self.tree[i].children) {
 						Vue.set(self.tree[i].children[j], 'hovering', false);
 					}
+					self.fatherNodeList.push({
+						id: self.tree[i].id,
+						label: self.tree[i].label,
+						sort: self.tree[i].sort
+					});
 				}
       }).catch(function(res) {
-        console.log(res.data.message);
+        console.log("初始化失败");
       });
 		},
 
@@ -192,7 +232,7 @@ export default {
 				isLeaf: node.isLeaf,
 				newNodeName: data.label,
 			}
-    	this.showDialog = true;	
+    	this.showEditDialog = true;	
 		},
 		// 新增节点
 		append(node, data) {
@@ -231,41 +271,52 @@ export default {
     // 删除节点
 		remove(node, data) {
 			if(node.isLeaf) { // 若是叶子节点
-				let parentId = node.parent.data.id;
-				for(let i in this.tree) {
-					if(this.tree[i].id === parentId) {
-						// 保证每个父节点至少有一个子节点
-						let childlist = this.tree[i].children;
-						if(childlist.length === 1) {
-							this.$message({
-								type: 'error',
-								message: "这里只有一个子节点了，不能删除"
+				this.$confirm(`你将删除的是子节点${data.label}, 你确定?`, '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => { 
+					let parentId = node.parent.data.id;
+					for(let i in this.tree) {
+						if(this.tree[i].id === parentId) {
+							// 保证每个父节点至少有一个子节点
+							let childlist = this.tree[i].children;
+							if(childlist.length === 1) {
+								this.$message({
+									type: 'error',
+									message: "这里只有一个子节点了，不能删除"
+								});
+								return;
+							}
+							// 删除子节点
+							var self = this,
+									params = {
+										id: data.id,
+										isLeaf: node.isLeaf
+									};
+							apiUrl.deleteTreeNode(params).then(function(res) {
+								self.$message({
+									type: 'success',
+									message: res.data.message
+								});
+								self.init();
+								self.clickObj = '';
+							}).catch(function(res) {
+								self.$message({
+									type: 'error',
+									message: res.data.message
+								});
 							});
-							return;
 						}
-						// 删除子节点
-						var self = this,
-								params = {
-									id: data.id,
-									isLeaf: node.isLeaf
-								};
-						apiUrl.deleteTreeNode(params).then(function(res) {
-							self.$message({
-								type: 'success',
-								message: res.data.message
-							});
-							self.init();
-							self.clickObj = '';
-						}).catch(function(res) {
-							self.$message({
-								type: 'error',
-								message: res.data.message
-							});
-						});
 					}
-				}
-			} else { // 若是父节点，就慎重一点
-			  this.$confirm('你将删除的是父节点, 你确定?', '提示', {
+				}).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除' + data.label
+          });          
+        });
+			} else { // 若是父节点
+			  this.$confirm(`你将删除的是父节点${data.label}, 你确定?`, '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
@@ -291,20 +342,29 @@ export default {
         }).catch(() => {
           this.$message({
             type: 'info',
-            message: '已取消删除'
+            message: '已取消删除' + data.label
           });          
         });
 			}
 		},
+		// 穿梭节点
+		shuttle(node, data) {
+			this.choiceFathId = node.parent.data.id;
+			this.originFathId = this.choiceFathId;
+			this.shuttleChildId = data.id;
+			this.showShuttleDialog = true;
+		},
 
 		// 处理关闭dialog
 		handleCloseDialog() {
-			this.showDialog = false;
+			this.showEditDialog = false;
 			this.motifyNode = {
 				id: '',
 				newNodeName: '',
 				isLeaf: ''
 			};
+			this.showShuttleDialog = false;
+			this.shuttleChildId = '';
 		},
 		// 保存修改的节点名称
 	  handleSaveNode() {
@@ -322,7 +382,7 @@ export default {
 						isLeaf: this.motifyNode.isLeaf
 					};
 			apiUrl.modifyTreeNode(params).then(function(res) {
-				self.showDialog = false;
+				self.showEditDialog = false;
 				self.$message({
 					type: 'success',
 					message: res.data.message
@@ -339,6 +399,43 @@ export default {
 				});
 			});
 		},
+		// 保存穿梭
+		handleSaveShuttle() {
+			if(this.choiceFathId === this.originFathId) {
+				this.$message({
+					type: 'warning',
+					message: '当前所选与原来的相同'
+				});
+				return;
+			}
+			let fatherNode = {};
+			let newchildsort = '';
+			for(let item of this.tree) {
+				if(item.id === this.choiceFathId) {
+					fatherNode = item;
+					newchildsort = item.children[item.children.length - 1].sort;
+					break;
+				}
+			}
+			var self = this,
+			    params = {
+						fatherid: fatherNode.id,
+						fatherlabel: fatherNode.label,
+						fathersort: fatherNode.sort,
+						newchildsort: newchildsort + 1,
+						childid: this.shuttleChildId
+					};
+			apiUrl.changeFather(params).then(function(res) {
+				self.$message({
+					type: 'success',
+					message: res.data.message
+				});
+				self.showShuttleDialog = false;
+				self.init();
+			}).catch(function(res) {
+				console.log("穿梭出错");
+			});
+		}
   },
 }
 </script>

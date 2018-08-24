@@ -1,5 +1,6 @@
 <template>
-  <div class="home"><!-- 这是前端展示页面的主Vue -->
+  <div class="home">
+    <!-- PC端 -->
     <div v-if="isPC" class="PC">
       <div class="lefttree">
         <el-tree
@@ -14,11 +15,12 @@
         <HomeCont :label-obj="clickObj"></HomeCont>
       </div>
     </div>
+    <!-- 移动端 -->
     <div v-else class="Mobile">
       <div class="topMobile">
         <el-button 
           type="primary" 
-          icon="el-icon-edit"
+          icon="el-icon-tickets"
           @click="isShowTree">
         </el-button>
         <h1>{{ title }}</h1>

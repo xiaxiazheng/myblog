@@ -217,3 +217,24 @@ exports.changeSort = function(req, res) {
       });
   });
 };
+
+// 穿梭，子节点改变父节点（加到别的树枝下）
+exports.changeFather = function(req, res) {
+  db.pool.getConnection(function(err, connection) {
+    if(err) {
+      console.log("连接数据库失败");
+      console.log(err);
+      return;
+    }
+    var sql = "UPDATE tree SET f_id=?, f_label=?, f_sort=?, c_sort=? WHERE c_id=?";
+    var array = [req.query.fatherid, req.query.fatherlabel, req.query.fathersort, req.query.newchildsort, req.query.childid];
+    connection.query(sql, array, function(err, results) {
+      if(err) {
+        console.log("查询失败");
+        return;
+      }
+      res.json({ resultsCode: 'success', message: '穿梭成功' });
+      connection.release();
+    });
+  });
+};
