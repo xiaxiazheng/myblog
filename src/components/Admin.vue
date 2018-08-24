@@ -69,7 +69,7 @@
 </template>
 
 <script>
-import Vue from 'vue'
+//import Vue from 'vue'
 import AdminCont from './admin/AdminCont'
 import apiUrl from '@/api/url.js'
 // import { treeData } from '@/mock.js'
