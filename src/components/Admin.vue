@@ -78,7 +78,7 @@
 			:visible.sync="showShuttleDialog"
 			width="30%"
 			:before-close="handleCloseDialog">
-			<span>请选择你要穿梭的父节点：</span>
+			<span>请选择"{{shuttleChildLabel}}"要穿梭到的父节点：</span>
 			<el-select v-model="choiceFathId">
 				<el-option
 					v-for="(item, index) in fatherNodeList"
@@ -129,6 +129,7 @@ export default {
 			originFathId: '',
 			choiceFathId: '',
 			shuttleChildId: '',
+			shuttleChildLabel: '',
 		};
 	},
 	mounted() {
@@ -352,6 +353,7 @@ export default {
 			this.choiceFathId = node.parent.data.id;
 			this.originFathId = this.choiceFathId;
 			this.shuttleChildId = data.id;
+			this.shuttleChildLabel = data.label;
 			this.showShuttleDialog = true;
 		},
 
@@ -365,6 +367,7 @@ export default {
 			};
 			this.showShuttleDialog = false;
 			this.shuttleChildId = '';
+			this.shuttleChildLabel = '';
 		},
 		// 保存修改的节点名称
 	  handleSaveNode() {
@@ -407,6 +410,17 @@ export default {
 					message: '当前所选与原来的相同'
 				});
 				return;
+			}
+			for(let item of this.tree) {
+				if(item.id === this.originFathId) {
+					if(item.children.length === 1) {
+						this.$message({
+							type: 'warning',
+							message: '待穿梭节点的父节点只有这一个子节点，不能穿梭'
+						});
+						return;
+					}
+				}
 			}
 			let fatherNode = {};
 			let newchildsort = '';
