@@ -469,7 +469,10 @@ export default {
 			padding-right: 8px;
 			.iconBox {
 				position: absolute;
-    		right: 13px;
+				right: 13px;
+				padding-left: 6px;
+				background-color: #f5f7fa;
+				z-index: 2;
 			}
 		}
   }
