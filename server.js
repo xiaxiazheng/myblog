@@ -89,10 +89,14 @@ app.get('*', function(req, res) {
 		}
 		else {
 			var filename = req.path.substring(1);    // 去掉前导'/'
-      var type = getType(filename.substring(filename.lastIndexOf('.') + 1));
-			res.writeHead(200, { "Content-Type": type });
-			// res.write(data.toString(), 'binary');
-			res.write(data.toString());
+			var type = filename.substring(filename.lastIndexOf('.') + 1);
+      var contType = getType(type);
+			res.writeHead(200, { "Content-Type": contType });
+			if(type === 'ico' || type === 'jpg' || type === 'jpeg' || type === 'png') { // 传图片和ico文件
+				res.write(data, "binary");
+			} else { // 其他
+				res.write(data.toString());
+			}
 		}
 		res.end();
 	});

@@ -91,7 +91,7 @@ export default {
     height: 100%;
     .loginCont {
       height: 100%;
-      background: url('../static/img/login.jpg') no-repeat fixed;
+      background: url('~@/assets/login.jpg') no-repeat fixed;
       background-size: 100% 100%;
       .loginBox {
         width: 250px;
