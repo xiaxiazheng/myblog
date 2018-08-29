@@ -4,7 +4,12 @@
       <div class="loginBox">
         <span>Please Login:</span>
         <el-input class="elinput1" v-model="username" placeholder="请输入用户名" maxlength="10"></el-input>
-        <el-input v-model="userpword" placeholder="请输入密码" maxlength="16"></el-input>
+        <el-input type="password" v-model="userpword" v-if="!showPassword" placeholder="请输入密码" maxlength="16" @keyup.native.enter="login">
+          <i slot="suffix" title="显示密码" @click="changePass('hide')" class="el-icon-view eye"></i>
+        </el-input>
+        <el-input type="text" v-model="userpword" v-if="showPassword" placeholder="请输入密码" maxlength="16" @keyup.native.enter="login">
+          <i slot="suffix" title="隐藏密码" @click="changePass('hide')" style="color:#409eff;" class="el-icon-view eye"></i>
+        </el-input>
         <el-button type="primary" @click="login">登录</el-button>
       </div>
 		</div>
@@ -20,9 +25,10 @@ export default {
 	name: 'Login',
 	data() {
 		return {
-      showAdmin: true, // 为true跳过登录
+      showAdmin: false, // 为true跳过登录
       username: '',
       userpword: '',
+      showPassword: false,
 		}
 	},
   components: {
@@ -71,6 +77,9 @@ export default {
         message: warning + "不可为空"
       });
       return false;
+    },
+    changePass() {
+      this.showPassword = !this.showPassword;
     }
 	}
 }
@@ -104,6 +113,12 @@ export default {
           // .el-input__inner {
           //   BACKGROUND-COLOR: transparent;
           // }
+          .eye {
+            cursor: pointer;
+            margin-right: 5px;
+            line-height: 40px;
+            font-size: 20px;
+          }
         }
         .elinput1 {
           margin-top: 60px;
