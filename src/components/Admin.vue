@@ -57,7 +57,12 @@
 		</div>
 		<!-- 右边的子组件 -->
 		<div class="rightcont">
-      <AdminCont :label-obj="clickObj"></AdminCont>
+			<el-switch
+				v-model="isEdit"
+				title="是否编辑">
+			</el-switch>
+      <AdminCont v-if="isEdit" :label-obj="clickObj"></AdminCont>
+			<HomeCont v-if="!isEdit" :label-obj="clickObj"></HomeCont>
 		</div>
 		<!-- 修改节点名称的dialog -->
 		<el-dialog
@@ -98,16 +103,19 @@
 <script>
 //import Vue from 'vue'
 import AdminCont from './admin/AdminCont'
+import HomeCont from './home/HomeCont'
 import apiUrl from '@/api/url.js'
 // import { treeData } from '@/mock.js'
 
 export default {
 	name: 'Admin',
 	components: {
-		AdminCont
+		AdminCont,
+		HomeCont
 	},
   data() {
 		return {
+			isEdit: false,
 			clickObj: '', // 传给子组件的，包括子节点的id和label
 			tree: [],
 			fatherNodeList: [], // 所有的父节点
@@ -473,6 +481,13 @@ export default {
 				padding-left: 6px;
 				background-color: #f5f7fa;
 				z-index: 2;
+			}
+		}
+		.rightcont {
+			.el-switch {
+				position: fixed;
+				right: 5rem;
+				top: 2rem;
 			}
 		}
   }
