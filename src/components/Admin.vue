@@ -5,8 +5,8 @@
       <el-tree
 				:data="tree"
 				:props="defaultProps"
-				node-key="id"
-				default-expand-all
+				:node-key="tree.id"
+				:default-expanded-keys="expandedList"
 				@node-click="handleClick"
 				:expand-on-click-node="false">
 				<span class="custom-tree-node" slot-scope="{ node, data }" @mouseover="showIcon(node)" @mouseout="hideIcon(node)">
@@ -120,6 +120,7 @@ export default {
 			tree: [],
 			fatherNodeList: [], // 所有的父节点
 			newChildLabel: '',
+			expandedList: [], // 保存当前默认展开的节点，不然一操作树init数据树就要折叠
 			defaultProps: {
 				children: 'children',
 				label: 'label'
@@ -194,9 +195,10 @@ export default {
 					type: 'success',
 					message: '上移成功'
 				});
+				self.saveFathExpend(node);
 				self.init();
 			}).catch(function(res) {
-				console.log(res.data.message);
+				console.log("上移出错");
 			});
 		},
 		// 下移
@@ -457,6 +459,24 @@ export default {
 			}).catch(function(res) {
 				console.log("穿梭出错");
 			});
+		},
+
+		// 保存当前父节点们的展开状态
+		saveFathExpend(node) {
+			let list = [];
+			if(!node.isLeaf) {  // 父节点
+				list = node.parent.childNodes;
+			} else {  // 子节点
+				list = node.parent.parent.childNodes;
+			}
+			console.log(list);
+			this.expandedList = [];
+			for(let item of list) {
+				if(item.expanded) {
+					this.expandedList.push(item.id);
+				}
+			}
+			console.log(this.expandedList);
 		}
   },
 }
