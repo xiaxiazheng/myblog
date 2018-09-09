@@ -4,7 +4,7 @@ import App from './App.vue'
 // import 'element-ui/lib/theme-chalk/index.css'
 // Vue.use(ElementUI);
 import router from './router' 
-console.log(window);
+// console.log(window);
 // 使页面pre代码高亮
 import hljs from 'highlight.js'
 import 'highlight.js/styles/monokai-sublime.css' //样式文件

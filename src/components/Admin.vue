@@ -5,7 +5,7 @@
       <el-tree
 				:data="tree"
 				:props="defaultProps"
-				:node-key="tree.id"
+				node-key="id"
 				:default-expanded-keys="expandedList"
 				@node-click="handleClick"
 				:expand-on-click-node="false">
@@ -243,7 +243,9 @@ export default {
 				isLeaf: node.isLeaf,
 				newNodeName: data.label,
 			}
-    	this.showEditDialog = true;	
+			this.showEditDialog = true;	
+			
+			this.saveFathExpend(node);
 		},
 		// 新增节点
 		append(node, data) {
@@ -268,6 +270,7 @@ export default {
 						type: 'success',
 						message: res.data.message
 					})
+					self.saveFathExpend(node);
 					self.init();
 				} else {
 					self.$message({
@@ -310,6 +313,7 @@ export default {
 									type: 'success',
 									message: res.data.message
 								});
+								self.saveFathExpend(node);
 								self.init();
 								self.clickObj = '';
 							}).catch(function(res) {
@@ -365,6 +369,8 @@ export default {
 			this.shuttleChildId = data.id;
 			this.shuttleChildLabel = data.label;
 			this.showShuttleDialog = true;
+
+			this.saveFathExpend(node);
 		},
 
 		// 处理关闭dialog
@@ -469,14 +475,12 @@ export default {
 			} else {  // 子节点
 				list = node.parent.parent.childNodes;
 			}
-			console.log(list);
 			this.expandedList = [];
 			for(let item of list) {
 				if(item.expanded) {
-					this.expandedList.push(item.id);
+					this.expandedList.push(item.data.id);
 				}
 			}
-			console.log(this.expandedList);
 		}
   },
 }
