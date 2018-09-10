@@ -18,6 +18,7 @@
 </template>
 
 <script>
+import { Base64 } from 'js-base64';
 import apiUrl from '@/api/url.js'
 import Admin from './Admin'
 
@@ -34,6 +35,32 @@ export default {
   components: {
 		Admin
   },
+  created() {
+    if(sessionStorage.getItem("xia_username") && sessionStorage.getItem("xia_password")) {
+      var self = this,
+        params = {
+          username: sessionStorage.getItem("xia_username"),
+          userpword: Base64.decode(sessionStorage.getItem("xia_password"))
+        };
+      apiUrl.postLogin(params).then(function(res) {
+        if(res.data.resultsCode === "success") {
+          self.showAdmin = true;
+          return;
+        } else {
+          self.$message({
+            type: 'error',
+            message: "请重新登陆"
+          });
+          return;
+        }
+      }).catch(function(res) {
+        self.$message({
+          type: 'error',
+          message: res.message
+        });
+      });
+    }
+  },
 	methods: {
 		login() {
       if(!this.checkEmpty()) {
@@ -47,6 +74,8 @@ export default {
       apiUrl.postLogin(params).then(function(res) {
         if(res.data.resultsCode === "success") {
           self.showAdmin = true;
+          sessionStorage.setItem("xia_username", self.username);
+          sessionStorage.setItem("xia_password", Base64.encode(self.userpword));
         } else if(res.data.resultsCode === "error") {
           self.$message({
             type: 'error',

@@ -46,9 +46,11 @@
 					</div>
 				</li>
 			</ul>
-			<div class="botton">
-        <el-button type="primary" plain @click="addCont">添加</el-button>
-				<el-button type="primary" plain @click="judge" :disabled="!isModify">保存</el-button>
+			<div class="button">
+        <el-button type="primary" plain @click="addCont" icon="el-icon-plus"></el-button>
+			</div>
+			<div class="save">
+				<el-button type="primary" plain @click="judge" :disabled="!isModify" icon="el-icon-check"></el-button>
 			</div>
 		</div>
 		<div v-else>
@@ -255,9 +257,15 @@ export default {
 				}
 			}
 		}
-		.botton {
+		.button {
 			margin-top: 20px;
 			text-align: center;
+		}
+		.save {
+			position: fixed;
+			text-align: center;
+			right: 4.5rem;
+			bottom: 2rem;
 		}
   }
 </style>
