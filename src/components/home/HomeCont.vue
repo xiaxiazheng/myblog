@@ -56,8 +56,8 @@ export default {
 					for(let i in self.contObj.list) {
 						self.contObj.list[i].cont = self.contObj.list[i].cont.replace(/</g, "&lt;"); // html标签的<转成实体字符,让所有的html标签失效
 						self.contObj.list[i].cont = self.contObj.list[i].cont.replace(/&lt;pre/g, "<pre"); // 把pre标签转回来
+						self.contObj.list[i].cont = self.contObj.list[i].cont.replace(/pre>\n/g, "pre>");  // 把pre后面的空格去掉
 						self.contObj.list[i].cont = self.contObj.list[i].cont.replace(/&lt;\/pre>/g, "</pre>"); // 把pre结束标签转回来
-						self.contObj.list[i].cont = self.contObj.list[i].cont.replace(/>\n/g, ">");
 						self.contObj.list[i].cont = self.contObj.list[i].cont.replace(/  /g, "&nbsp;&nbsp;"); // 把空格转成实体字符，以防多空格被合并
 						self.contObj.list[i].cont = self.contObj.list[i].cont.replace(/\n|\r\n/g, "<br/>"); // 把换行转成br标签
 					}

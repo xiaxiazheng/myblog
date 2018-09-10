@@ -47,10 +47,10 @@
 				</li>
 			</ul>
 			<div class="button">
-        <el-button type="primary" plain @click="addCont" icon="el-icon-plus"></el-button>
+        <el-button type="primary" @click="addCont" icon="el-icon-plus"></el-button>
 			</div>
 			<div class="save">
-				<el-button type="primary" plain @click="judge" :disabled="!isModify" icon="el-icon-check"></el-button>
+				<el-button type="primary" @click="judge" :disabled="!isModify" icon="el-icon-check"></el-button>
 			</div>
 		</div>
 		<div v-else>
