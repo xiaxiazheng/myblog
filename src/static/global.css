@@ -15,7 +15,7 @@
   overflow-y: auto;
   width: calc(80%);
   height: 100%;
-  border-left: 1px solid black;
+  border-left: 1px solid #eaecef;
   box-sizing: border-box;
   vertical-align: top;
 }

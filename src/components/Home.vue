@@ -103,7 +103,7 @@ export default {
 @import '../static/global.less';
 
   .home {
-    height: 100%;
+    height: calc(100% - 3.6rem);
     .PC {
       height: 100%;
     }

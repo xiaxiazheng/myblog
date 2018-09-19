@@ -491,7 +491,7 @@ export default {
 @import '../static/global.less';
 
   .admin {
-		height: 100%;
+		height: calc(100% - 3.6rem);
 		.custom-tree-node {
 			flex: 1;
 			display: flex;
