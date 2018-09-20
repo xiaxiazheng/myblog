@@ -1,7 +1,8 @@
 var fs = require('fs');            // 用于处理本地文件
 var express = require('express');
 var app = express();
-// app.use(express.static('public'));
+
+app.use(express.static('server'));
 
 // 让req获取到参数
 var bodyParser = require('body-parser');
