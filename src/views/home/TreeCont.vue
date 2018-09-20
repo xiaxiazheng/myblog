@@ -1,5 +1,5 @@
 <template>
-  <div class="homecont">
+  <div class="treecont">
 		<div v-if="labelObj.label">
       <h1>{{labelObj.label}}</h1>
 			<!-- <span v-if="labelObj.id">{{labelObj.id}}</span> -->
@@ -72,7 +72,7 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less">
-  .homecont {
+  .treecont {
 		padding: 10px;
 		text-align: left;
 		line-height: 1.5;

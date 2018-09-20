@@ -1,5 +1,5 @@
 import App from './App.vue'
-import router from './router' 
+import router from './router.js' 
 
 // 使页面pre代码高亮
 import hljs from 'highlight.js'

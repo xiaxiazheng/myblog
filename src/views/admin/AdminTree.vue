@@ -1,5 +1,5 @@
 <template>
-  <div class="admin"><!-- 这是后端控制台的主Vue -->
+  <div class="admintree">
 	  <!-- 左边的树 -->
 	  <div class="lefttree">
       <el-tree
@@ -61,8 +61,8 @@
 				v-model="isEdit"
 				title="是否编辑">
 			</el-switch>
-      <AdminCont v-if="isEdit" :label-obj="clickObj"></AdminCont>
-			<HomeCont v-if="!isEdit" :label-obj="clickObj"></HomeCont>
+      <AdminTreeCont v-if="isEdit" :label-obj="clickObj"></AdminTreeCont>
+			<TreeCont v-if="!isEdit" :label-obj="clickObj"></TreeCont>
 		</div>
 		<!-- 修改节点名称的dialog -->
 		<el-dialog
@@ -71,7 +71,7 @@
 			width="30%"
 			:before-close="handleCloseDialog">
 			<span>{{notice}}</span>
-			<el-input v-model="motifyNode.newNodeName" placeholder="请输入内容"></el-input>
+			<el-input v-model="motifyNode.newNodeName" placeholder="请输入内容" @keyup.native.enter="handleSaveNode"></el-input>
 			<span slot="footer" class="dialog-footer">
 				<el-button @click="handleCloseDialog">取 消</el-button>
 				<el-button type="primary" @click="handleSaveNode">确 定</el-button>
@@ -102,16 +102,16 @@
 
 <script>
 //import Vue from 'vue'
-import AdminCont from './admin/AdminCont'
-import HomeCont from './home/HomeCont'
+import AdminTreeCont from './AdminTreeCont'
+import TreeCont from '../home/TreeCont'
 import apiUrl from '@/api/url.js'
 // import { treeData } from '@/mock.js'
 
 export default {
 	name: 'Admin',
 	components: {
-		AdminCont,
-		HomeCont
+		AdminTreeCont,
+		TreeCont
 	},
   data() {
 		return {
@@ -140,6 +140,34 @@ export default {
 			shuttleChildId: '',
 			shuttleChildLabel: '',
 		};
+	},
+	beforeCreate() {
+		if(sessionStorage.getItem("xia_username") && sessionStorage.getItem("xia_password")) {
+      var self = this,
+        params = {
+          username: sessionStorage.getItem("xia_username"),
+          userpword: Base64.decode(sessionStorage.getItem("xia_password"))
+        };
+      apiUrl.postLogin(params).then(function(res) {
+        if(res.data.resultsCode === "success") {
+          self.showAdmin = true;
+          return;
+        } else {
+          self.$message({
+            type: 'error',
+            message: "请重新登陆"
+          });
+          this.$router.replace({ path: 'login' });
+        }
+      }).catch(function(res) {
+        self.$message({
+          type: 'error',
+          message: res.message
+        });
+      });
+    } else {
+			this.$router.replace({ path: 'login' });
+		}
 	},
 	mounted() {
 		this.$nextTick(function() {
@@ -335,7 +363,15 @@ export default {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
-        }).then(() => { 
+        }).then(() => {
+					// 保证至少有一个父节点
+					if(node.parent.data.length === 1) {
+						this.$message({
+							type: 'error',
+							message: "只剩下一个父节点了，不能删除"
+						});
+						return;
+					}
 					// 删除父节点
 					var self = this,
 							params = {
@@ -409,8 +445,8 @@ export default {
 				if(self.motifyNode.isLeaf) {  // 若是子节点，则把修改后的节点名传到子组件
 					self.clickObj.label = self.motifyNode.newNodeName;
 				}
-				self.motifyNode.newNodeName = '';
 				self.init();
+				self.motifyNode.newNodeName = '';
 			}).catch(function(res) {
 				self.$message({
 					type: 'error',
@@ -488,10 +524,9 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less">
-@import '../static/global.less';
+@import '../../static/global.less';
 
-  .admin {
-		height: calc(100% - 3.6rem);
+  .admintree {
 		.custom-tree-node {
 			flex: 1;
 			display: flex;
@@ -510,8 +545,8 @@ export default {
 		.rightcont {
 			.el-switch {
 				position: fixed;
-				right: 5rem;
-				top: 2rem;
+        right: 3rem;
+        top: 5rem;
 			}
 		}
   }

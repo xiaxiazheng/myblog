@@ -1,6 +1,6 @@
 <template>
   <div class="login">
-		<div v-if="!showAdmin" class="loginCont">
+		<div class="loginCont">
       <div class="loginBox">
         <span>Please Login:</span>
         <el-input class="elinput1" v-model="username" placeholder="请输入用户名" maxlength="10"></el-input>
@@ -13,20 +13,18 @@
         <el-button type="primary" @click="login">登录</el-button>
       </div>
 		</div>
-		<Admin v-if="showAdmin"></Admin>
   </div>
 </template>
 
 <script>
 import { Base64 } from 'js-base64';
 import apiUrl from '@/api/url.js'
-import Admin from './Admin'
+import Admin from '@/views/Admin'
 
 export default {
 	name: 'Login',
 	data() {
 		return {
-      showAdmin: false, // 为true跳过登录
       username: '',
       userpword: '',
       showPassword: false,
@@ -44,7 +42,7 @@ export default {
         };
       apiUrl.postLogin(params).then(function(res) {
         if(res.data.resultsCode === "success") {
-          self.showAdmin = true;
+          self.$router.replace({ path: 'admin' });
           return;
         } else {
           self.$message({
@@ -73,7 +71,7 @@ export default {
           };
       apiUrl.postLogin(params).then(function(res) {
         if(res.data.resultsCode === "success") {
-          self.showAdmin = true;
+          self.$router.replace({ path: 'admin' });
           sessionStorage.setItem("xia_username", self.username);
           sessionStorage.setItem("xia_password", Base64.encode(self.userpword));
         } else if(res.data.resultsCode === "error") {

@@ -1,5 +1,5 @@
 <template>
-  <div class="home">
+  <div class="tree">
     <!-- PC端 -->
     <div v-if="isPC" class="PC">
       <div class="lefttree">
@@ -12,7 +12,7 @@
         </el-tree>
       </div>
       <div class="rightcont">
-        <HomeCont :label-obj="clickObj"></HomeCont>
+        <TreeCont :label-obj="clickObj"></TreeCont>
       </div>
     </div>
     <!-- 移动端 -->
@@ -35,21 +35,20 @@
         </el-tree>
       </div>
       <div class="rightMobile">
-        <HomeCont :label-obj="clickObj" :isPC="isPC"></HomeCont>
+        <TreeCont :label-obj="clickObj" :isPC="isPC"></TreeCont>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import HomeCont from './home/HomeCont'
 import apiUrl from '@/api/url.js'
-// import { treeData } from "@/mock.js";
+import TreeCont from './TreeCont'
 
 export default {
-  name: 'Home',
+  name: 'tree',
   components: {
-    HomeCont,
+    TreeCont,
   },
   data() {
     return {
@@ -100,10 +99,9 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" scoped>
-@import '../static/global.less';
+@import '../../static/global.less';
 
-  .home {
-    height: calc(100% - 3.6rem);
+  .tree {
     .PC {
       height: 100%;
     }
