@@ -2,7 +2,7 @@
   <div class="adminmain">
     <div>
       <el-upload
-        action="http://localhost:3000/main_upload"
+        :action="uploadUrl"
         name="image"
         list-type="picture-card"
         :on-preview="handlePictureCardPreview"
@@ -19,6 +19,7 @@
 
 <script>
 import apiUrl from '@/api/url.js'
+import { baseUrl } from '@/config.js'
 
 export default {
   name: 'AdminMain',
@@ -26,7 +27,8 @@ export default {
     return {
       dialogImageUrl: '',
       dialogVisible: false,
-      imgUrllist: []
+      imgUrllist: [],
+      uploadUrl: baseUrl + '/main_upload'
     }
   },
   mounted() {
@@ -45,7 +47,7 @@ export default {
           for(let item of res.data) {
             self.imgUrllist.push({
               name: item.imgname,
-              url: 'http://localhost:3000/' + item.imgname
+              url: baseUrl + '/' + item.imgname
             });
           }
         }

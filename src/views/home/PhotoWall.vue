@@ -45,7 +45,7 @@ export default {
           for(let item of res.data) {
             self.imgUrllist.push({
               name: item.imgname,
-              url: 'http://localhost:3000/wall/' + item.imgname
+              url: baseUrl + '/wall/' + item.imgname
             });
           }
         }

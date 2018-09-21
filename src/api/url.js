@@ -1,10 +1,6 @@
 import axios from 'axios'
-import { getImgList } from '../../server/image';
 // 后台启动的服务地址
-// 本地
-const baseUrl = 'http://localhost:3000'
-// 服务器
-// const baseUrl = 'http://123.207.5.131:80'
+import { baseUrl } from '@/config.js'
 
 export default {
   /** 登录 */

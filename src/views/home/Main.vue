@@ -1,7 +1,7 @@
 <template>
   <div class="main">
-    <el-carousel interval="5000" v-if="imgUrlList.length !== 0">
-      <el-carousel-item v-for="item in imgUrlList" :key="item">
+    <el-carousel :interval="5000" v-if="imgUrlList.length !== 0">
+      <el-carousel-item v-for="(item, index) in imgUrlList" :key="index">
         <img :src="item" alt="">
       </el-carousel-item>
     </el-carousel>
@@ -10,6 +10,7 @@
 
 <script>
 import apiUrl from '@/api/url.js'
+import { baseUrl } from '@/config.js'
 
 export default {
   name: 'Main',
@@ -30,9 +31,8 @@ export default {
             type: 'main'
           };
       apiUrl.getImgList(params).then(function(res) {
-        console.log(res);
         for(let item of res.data) {
-          self.imgUrlList.push('http://localhost:3000/' + item.imgname);
+          self.imgUrlList.push(baseUrl + '/' + item.imgname);
         }
       }).catch(function(res) {
         console.log(res);
