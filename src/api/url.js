@@ -46,4 +46,7 @@ export default {
   getImgList(params) {
     return axios.get(baseUrl + '/getimglist', {params});
   },
+  deleteImg(params) {
+    return axios.get(baseUrl + '/deleteimg', {params});
+  },
 }

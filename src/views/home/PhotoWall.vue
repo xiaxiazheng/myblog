@@ -6,12 +6,12 @@
         name="image"
         list-type="picture-card"
         :on-preview="handlePictureCardPreview"
-        :on-remove="handleRemove"
         :file-list="imgUrllist">
         <i class="el-icon-plus"></i>
       </el-upload>
-      <el-dialog :visible.sync="dialogVisible">
+      <el-dialog :visible.sync="dialogVisible" :title="dialogImageName">
         <img width="100%" :src="dialogImageUrl" alt="">
+        <span>{{ dialogCTime }}</span>
       </el-dialog>
     </div>
   </div>
@@ -19,13 +19,16 @@
 
 <script>
 import apiUrl from '@/api/url.js'
+import { baseUrl } from '@/config.js'
 
 export default {
   name: 'PhotoWall',
   data() {
     return {
-      dialogVisible: false,
+      dialogImageName: '',
       dialogImageUrl: '',
+      dialogCTime: '',
+      dialogVisible: false,
       imgUrllist: []
     }
   },
@@ -44,7 +47,9 @@ export default {
         if(res.data.length !== 0) {
           for(let item of res.data) {
             self.imgUrllist.push({
-              name: item.imgname,
+              img_id: item.img_id,
+              imgname: item.imgname,
+              cTime: item.cTime,
               url: baseUrl + '/wall/' + item.imgname
             });
           }
@@ -53,13 +58,12 @@ export default {
         console.log(res);
       });
     },
-    handleRemove(file, fileList) {
-      console.log(file, fileList);
-    },
     handlePictureCardPreview(file) {
       this.dialogImageUrl = file.url;
+      this.dialogImageName = file.imgname;
+      this.dialogCTime = file.cTime;
       this.dialogVisible = true;
-    }
+    },
   }
 }
 </script>

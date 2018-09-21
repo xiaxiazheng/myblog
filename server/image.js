@@ -3,9 +3,10 @@ var db = require('./db.js');
 var Common = require('./common.js');
 var fs = require('fs');
 
-// 获取上传的图片保存到本地，并将文件名保存到数据库
+/** 获取上传的图片保存到本地，并将文件名保存到数据库 */
+// 主页的，main
 exports.saveMainImg = function(req, res) {
-  console.log(req.file);  /* 上传的文件信息 */
+  // console.log(req.file);  /* 上传的文件信息 */
   var des_file = __dirname + "/img/" + req.file.originalname; /* 这里要注意，因为这个文件已经在server里了，所以这里的__dirname是有server的 */
   fs.readFile(req.file.path, function (err, data) {
     fs.writeFile(des_file, data, function (err) {
@@ -36,9 +37,9 @@ exports.saveMainImg = function(req, res) {
     });
   });
 };
-
+// 图片墙的，wall
 exports.saveWallImg = function(req, res) {
-  console.log(req.file);  /* 上传的文件信息 */
+  // console.log(req.file);  /* 上传的文件信息 */
   var des_file = __dirname + "/img/wall/" + req.file.originalname; /* 这里要注意，因为这个文件已经在server里了，所以这里的__dirname是有server的 */
   fs.readFile(req.file.path, function (err, data) {
     fs.writeFile(des_file, data, function (err) {
@@ -70,9 +71,9 @@ exports.saveWallImg = function(req, res) {
   });
 };
 
-// 获取某个type的所有图片名称
+// 获取某个type的所有图片名称，然后可以通过express静态资源获取
 exports.getImgList = function(req, res) {
-  var sql = "SELECT * FROM image WHERE type=?";
+  var sql = "SELECT * FROM image WHERE type=? ORDER BY cTime DESC";
   db.pool.getConnection(function(err, connection) {
     if(err) {
       console.log("连接数据库失败");
@@ -91,3 +92,38 @@ exports.getImgList = function(req, res) {
     });
   });
 };
+
+// 删除某张图片，删掉本地的还要删掉数据库的
+exports.deleteImg = function(req, res) {
+  let des_file = '';
+  if(req.query.type === 'main') {
+    des_file = __dirname + "/img/" + req.query.imgname;
+  }
+  if(req.query.type === 'wall') {
+    des_file = __dirname + "/img/wall/" + req.query.imgname;
+  }
+  fs.unlink(des_file, function (err) {
+    if( err ){
+      console.log( err );
+    } else {
+      var sql = "DELETE FROM image WHERE img_id=? && type=?";
+      db.pool.getConnection(function(err, connection) {
+        if(err) {
+          console.log("连接数据库失败");
+          console.log(err);
+          return;
+        }
+        var array = [req.query.img_id, req.query.type];
+        connection.query(sql, array, function(err, results) {
+          if(err) {
+            console.log("保存图片信息失败");
+            return;
+          }
+          res.json({ resultsCode: 'success', message: '删除成功' })
+
+          connection.release();
+        });
+      });
+    }
+  });
+}

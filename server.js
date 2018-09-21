@@ -90,6 +90,9 @@ app.get('/', function(req, res) {
 	app.get('/getimglist', function(req, res) {
 		image.getImgList(req, res);
 	});
+	app.get('/deleteimg', function(req, res) {
+		image.deleteImg(req, res);
+	});
 /* 结束 */
 
 
