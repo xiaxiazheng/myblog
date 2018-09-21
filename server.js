@@ -1,13 +1,17 @@
-var fs = require('fs');            // 用于处理本地文件
+var fs = require('fs');
 var express = require('express');
 var app = express();
 
-app.use(express.static('server'));
+app.use(express.static('server/img'));  // 在这里设置了静态目录，到时直接用'域名+文件名'访问server/img目录下的静态文件
 
 // 让req获取到参数
 var bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
+// 配置上传文件相关
+var multer  = require('multer');
+var upload = multer({ dest: '/' });
 
 // 给所有的加该请求头
 app.all('*', function(req, res, next) {
@@ -30,6 +34,7 @@ app.get('/', function(req, res) {
 		res.end();
 	});
 });
+
 
 /* 开始写接口 */
 	// 登录
@@ -74,8 +79,16 @@ app.get('/', function(req, res) {
 	app.get('/changecontsort', function(req, res) {
 		cont.changeSort(req, res);
 	});
-// app.get()
+	// 上传图片
+	var image = require('./server/image.js');
+	app.post('/main_upload', upload.single('image'), function (req, res) {
+		image.saveMainImg(req, res);
+	});
+	app.get('/getimglist', function(req, res) {
+		image.getImgList(req, res);
+	});
 /* 结束 */
+
 
 // 放在最后，用于传递文件
 app.get('*', function(req, res) {

@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { getImgList } from '../../server/image';
 // 后台启动的服务地址
 // 本地
 const baseUrl = 'http://localhost:3000'
@@ -44,5 +45,9 @@ export default {
   },
   changeContSort(params) {
     return axios.get(baseUrl + '/changecontsort', {params});
-  }
+  },
+  /** 获取某个类型的图片名称列表 */
+  getImgList(params) {
+    return axios.get(baseUrl + '/getimglist', {params});
+  },
 }

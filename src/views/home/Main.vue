@@ -1,8 +1,8 @@
 <template>
   <div class="main">
-    <el-carousel interval="5000">
-      <el-carousel-item v-for="item in 4" :key="item">
-        <img src="../../assets/login.jpg" alt="">
+    <el-carousel interval="5000" v-if="imgUrlList.length !== 0">
+      <el-carousel-item v-for="item in imgUrlList" :key="item">
+        <img :src="item" alt="">
       </el-carousel-item>
     </el-carousel>
   </div>
@@ -19,7 +19,7 @@ export default {
   },
   data() {
     return {
-      item: "23333333"
+      imgUrlList: []
     }
   },
   mounted() {
@@ -29,7 +29,18 @@ export default {
   },
   methods: {
     init() {
-      
+      let self = this,
+          params = {
+            type: 'main'
+          };
+      apiUrl.getImgList(params).then(function(res) {
+        console.log(res);
+        for(let item of res.data) {
+          self.imgUrlList.push('http://localhost:3000/' + item.imgname);
+        }
+      }).catch(function(res) {
+        console.log(res);
+      });
     },
   }
 }

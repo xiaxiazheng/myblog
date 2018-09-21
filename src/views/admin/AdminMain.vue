@@ -2,10 +2,12 @@
   <div class="adminmain">
     <div>
       <el-upload
-        action="https://jsonplaceholder.typicode.com/posts/"
+        action="http://localhost:3000/main_upload"
+        name="image"
         list-type="picture-card"
         :on-preview="handlePictureCardPreview"
-        :on-remove="handleRemove">
+        :on-remove="handleRemove"
+        :file-list="imgUrllist">
         <i class="el-icon-plus"></i>
       </el-upload>
       <el-dialog :visible.sync="dialogVisible">
@@ -26,7 +28,9 @@ export default {
   },
   data() {
     return {
-      
+      dialogImageUrl: '',
+      dialogVisible: false,
+      imgUrllist: []
     }
   },
   mounted() {
@@ -36,8 +40,30 @@ export default {
   },
   methods: {
     init() {
-      
+      let self = this,
+          params = {
+            type: 'main'
+          };
+      apiUrl.getImgList(params).then(function(res) {
+        if(res.data.length !== 0) {
+          for(let item of res.data) {
+            self.imgUrllist.push({
+              name: item.imgname,
+              url: 'http://localhost:3000/' + item.imgname
+            });
+          }
+        }
+      }).catch(function(res) {
+        console.log(res);
+      });
     },
+    handleRemove(file, fileList) {
+      console.log(file, fileList);
+    },
+    handlePictureCardPreview(file) {
+      this.dialogImageUrl = file.url;
+      this.dialogVisible = true;
+    }
   }
 }
 </script>
