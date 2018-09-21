@@ -16,9 +16,9 @@ export default new VueRouter({
 					component: resolve => require(['@/views/home/Tree'], resolve),
 				},
 				{
-					path: 'wait',
-					name: 'Wait',
-					component: resolve => require(['@/views/home/Wait'], resolve),
+					path: 'photowall',
+					name: 'PhotoWall',
+					component: resolve => require(['@/views/home/PhotoWall'], resolve),
 				}
 			]
 		},
@@ -43,9 +43,9 @@ export default new VueRouter({
 					component: resolve => require(['@/views/admin/AdminTree'], resolve),
 				},
 				{
-					path: 'adminwait',
-					name: 'AdminWait',
-					component: resolve => require(['@/views/admin/AdminWait'], resolve),
+					path: 'adminphotowall',
+					name: 'AdminPhotoWall',
+					component: resolve => require(['@/views/admin/AdminPhotoWall'], resolve),
 				}
 			]
 		}

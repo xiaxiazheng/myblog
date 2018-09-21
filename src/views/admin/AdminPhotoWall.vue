@@ -1,8 +1,8 @@
 <template>
-  <div class="adminmain">
+  <div class="adminwait">
     <div>
       <el-upload
-        action="http://localhost:3000/main_upload"
+        action="http://localhost:3000/wall_upload"
         name="image"
         list-type="picture-card"
         :on-preview="handlePictureCardPreview"
@@ -21,7 +21,7 @@
 import apiUrl from '@/api/url.js'
 
 export default {
-  name: 'AdminMain',
+  name: 'AdminWait',
   data() {
     return {
       dialogImageUrl: '',
@@ -38,14 +38,14 @@ export default {
     init() {
       let self = this,
           params = {
-            type: 'main'
+            type: 'wall'
           };
       apiUrl.getImgList(params).then(function(res) {
         if(res.data.length !== 0) {
           for(let item of res.data) {
             self.imgUrllist.push({
               name: item.imgname,
-              url: 'http://localhost:3000/' + item.imgname
+              url: 'http://localhost:3000/wall/' + item.imgname
             });
           }
         }
@@ -68,7 +68,7 @@ export default {
 <style lang="less" scoped>
 @import '../../static/global.less';
 
-  .adminmain {
+  .adminwait {
     height: 100%;
   }
 </style>

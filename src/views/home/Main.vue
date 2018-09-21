@@ -10,13 +10,9 @@
 
 <script>
 import apiUrl from '@/api/url.js'
-import Nav from '@/components/Nav'
 
 export default {
   name: 'Main',
-  components: {
-    Nav
-  },
   data() {
     return {
       imgUrlList: []
@@ -52,7 +48,7 @@ export default {
 
   .main {
     height: calc(100% - 7.2rem) !important;
-    padding: 1rem 3.6rem 2rem 0;
+    padding: 1rem 0 2rem;
     max-width: 960px; // 走马灯宽度
     margin: 0 auto;
     .el-carousel__container {

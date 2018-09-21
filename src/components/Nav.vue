@@ -9,7 +9,7 @@
       </div>
       <div class="rightside">
         <span class="tabItem" :class="{'active': activeTab === 'tree'}" @click="clickTabs('Tree')">知识树</span>
-        <span class="tabItem" :class="{'active': activeTab === 'wait'}" @click="clickTabs('Wait')">待定</span>
+        <span class="tabItem" :class="{'active': activeTab === 'photowall'}" @click="clickTabs('PhotoWall')">图片墙</span>
         <a href="https://github.com/xiaxiazheng/myblog">
           GitHub
           <i class="el-icon-loading"></i>
@@ -25,9 +25,7 @@
       </div>
       <div class="rightside">
         <span class="tabItem" :class="{'active': activeTab === 'tree'}" @click="clickTabs('AdminTree')">知识树</span>
-        <span class="tabItem" :class="{'active': activeTab === 'wait'}" @click="clickTabs('AdminWait')">待定</span>
-        <!-- <span class="tabItem" :class="{'active': activeTab === 'tree'}" @click="clickTabs('dmintree')">知识树</span>
-        <span class="tabItem" :class="{'active': activeTab === 'wait'}" @click="clickTabs('adminwait')">待定</span> -->
+        <span class="tabItem" :class="{'active': activeTab === 'photowall'}" @click="clickTabs('AdminPhotoWall')">图片墙</span>
         <a href="https://github.com/xiaxiazheng/myblog">
           GitHub
           <i class="el-icon-loading"></i>

@@ -84,6 +84,9 @@ app.get('/', function(req, res) {
 	app.post('/main_upload', upload.single('image'), function (req, res) {
 		image.saveMainImg(req, res);
 	});
+	app.post('/wall_upload', upload.single('image'), function (req, res) {
+		image.saveWallImg(req, res);
+	});
 	app.get('/getimglist', function(req, res) {
 		image.getImgList(req, res);
 	});
