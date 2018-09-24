@@ -1,5 +1,5 @@
 <template>
-  <div class="photowall">
+  <div class="uploadphotowall">
     <el-upload
       :action="uploadUrl"
       name="image"
@@ -129,7 +129,7 @@ export default {
 <style lang="less">
 @import '../static/global.less';
 
-  .photowall {
+  .uploadphotowall {
     height: 100%;
   }
 </style>
