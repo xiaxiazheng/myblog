@@ -32,7 +32,7 @@ export default {
           };
       apiUrl.getImgList(params).then(function(res) {
         for(let item of res.data) {
-          self.imgUrlList.push(baseUrl + '/' + item.imgname);
+          self.imgUrlList.push(baseUrl + '/main/' + item.filename);
         }
       }).catch(function(res) {
         console.log(res);

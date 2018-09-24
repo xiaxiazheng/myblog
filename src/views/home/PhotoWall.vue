@@ -49,8 +49,9 @@ export default {
             self.imgUrllist.push({
               img_id: item.img_id,
               imgname: item.imgname,
+              filename: item.filename,
               cTime: item.cTime,
-              url: baseUrl + '/wall/' + item.imgname
+              url: baseUrl + '/wall/' + item.filename
             });
           }
         }
@@ -68,7 +69,6 @@ export default {
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less">
 @import '../../static/global.less';
 

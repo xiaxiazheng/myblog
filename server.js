@@ -11,7 +11,7 @@ app.use(bodyParser.json());
 
 // 配置上传文件相关
 var multer  = require('multer');
-var upload = multer({ dest: '/' });
+var upload = multer({ dest: __dirname + '/' });
 
 // 给所有的加该请求头
 app.all('*', function(req, res, next) {
