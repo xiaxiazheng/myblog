@@ -36,7 +36,7 @@ export default {
             type: 'error',
             message: "请重新登陆"
           });
-          this.$router.push({ name: 'Login' });
+          this.$router.replace({ path: '/login' });
         }
       }).catch(function(res) {
         self.$message({
@@ -49,7 +49,7 @@ export default {
         type: 'warning',
         message: "请先登陆"
       });
-      this.$router.push({ name: 'Login' });
+      this.$router.replace({ path: '/login' });
 		}
 	},
 	mounted() {

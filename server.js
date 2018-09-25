@@ -135,7 +135,7 @@ var server = app.listen(3000, 'localhost', function () {
 // 	console.log('Graduation app listening at http://123.207.5.131:%s', port);
 // });
 
-// 获取文件类型, element的字体类型暂时没办法
+// 获取文件类型
 function getType(endTag){
 	var type=null;
 	switch(endTag){
