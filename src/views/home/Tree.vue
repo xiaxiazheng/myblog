@@ -75,13 +75,12 @@ export default {
       }
       var self = this,
           params = {};
-      // this.tree = treeData;
       apiUrl.getTree(params).then(function(res) {
-        // self.tree = res.data;
-        self.tree = [{
-          label: 'father',
-          children: res.data
-        }];
+        self.tree = res.data;
+        // self.tree = [{
+        //   label: 'father',
+        //   children: res.data
+        // }];
         console.log(self.tree);
       }).catch(function(res) {
         console.log(res.message);

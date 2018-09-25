@@ -42,7 +42,7 @@
 							type="text"
 							size="mini"
 							@click="() => shuttle(node, data)"
-							v-if="node.isLeaf">
+							v-if="node.level === 3">
 							<i class="el-icon-upload"></i>
 						</el-button>
 						<el-button
@@ -183,16 +183,18 @@ export default {
 				self.fatherNodeList = [];
 				// 给树设置属性
 				for(let i in self.tree) {
-					// hovering
-					Vue.set(self.tree[i], 'hovering', false);
 					for(let j in self.tree[i].children) {
+						// hovering
 						Vue.set(self.tree[i].children[j], 'hovering', false);
+						for(let k in self.tree[i].children[j].children) {
+							Vue.set(self.tree[i].children[j].children[k], 'hovering', false);
+						}
+						self.fatherNodeList.push({
+							id: self.tree[i].children[j].id,
+							label: self.tree[i].children[j].label,
+							sort: self.tree[i].children[j].sort
+						});
 					}
-					self.fatherNodeList.push({
-						id: self.tree[i].id,
-						label: self.tree[i].label,
-						sort: self.tree[i].sort
-					});
 				}
       }).catch(function(res) {
         console.log("初始化失败");
@@ -212,7 +214,7 @@ export default {
 		up(node, data) {
 			var self = this,
 					params = {
-						isLeaf: node.isLeaf,
+						level: node.level,
 						thisId: node.data.id,
 						thisSort: node.data.sort,
 						otherId: node.previousSibling.data.id,
@@ -233,7 +235,7 @@ export default {
 		down(node, data) {
 			var self = this,
 					params = {
-						isLeaf: node.isLeaf,
+						level: node.level,
 						thisId: node.data.id,
 						thisSort: node.data.sort,
 						otherId: node.nextSibling.data.id,
@@ -252,23 +254,23 @@ export default {
 
 		// 点击节点，三个参数分别为传递给 data 属性的数组中该节点所对应的对象、节点对应的 Node、节点组件本身。
 		handleClick(obj, node, component) {
-			let isLeaf = node.isLeaf;
-			if(isLeaf) { // 若是子节点则右边显示具体信息
+			if(node.level === 3) { // 若是子节点则右边显示具体信息
 				this.clickObj = node.data;
 			}
 		},
 
 		// 修改节点
 		motify(node, data) {
-			let isLeaf = node.isLeaf;
-			if(isLeaf) {
+			let level = node.level;
+			if(level === 3) {
 				this.notice = '修改子节点名称';
-			} else {
+			}
+			if(level === 2) {
 			  this.notice = '修改父节点名称';
 			}
 			this.motifyNode = {
 				id: data.id,
-				isLeaf: node.isLeaf,
+				level: node.level,
 				newNodeName: data.label,
 			}
 			this.showEditDialog = true;	
@@ -280,16 +282,18 @@ export default {
 			// 这里先请求后台数据
 			var self = this,
 			    params = {
-						isLeaf: node.isLeaf,
+						level: node.level,
+						category_id: node.data.category_id
 					};
-			if(node.isLeaf) {  // 若是子节点
+			if(node.level === 3) {  // 若是子节点
 				params.id = node.parent.data.id;
 				params.label = node.parent.data.label;
 				params.f_sort = node.parent.data.sort;
 				var list = node.parent.data.children;
 				params.c_sort = list[list.length - 1].sort; // 传当前父节点的最后一个子节点的sort过去
-			} else { // 若是父节点
-				var list = node.parent.data;
+			}
+			if(node.level === 2) { // 若是父节点
+				var list = node.parent.data.children;
 				params.sort = list[list.length - 1].sort; // 传最后一个父节点的sort过去
 			}
 			apiUrl.addTreeNode(params).then(function(res) {
@@ -312,44 +316,50 @@ export default {
 		},
     // 删除节点
 		remove(node, data) {
-			if(node.isLeaf) { // 若是叶子节点
+			if(node.level === 3) { // 若是叶子节点
 				this.$confirm(`你将删除的是子节点${data.label}, 你确定?`, '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
-        }).then(() => { 
+        }).then(() => {
+					let category_id = data.category_id;
 					let parentId = node.parent.data.id;
 					for(let i in this.tree) {
-						if(this.tree[i].id === parentId) {
-							// 保证每个父节点至少有一个子节点
-							let childlist = this.tree[i].children;
-							if(childlist.length === 1) {
-								this.$message({
-									type: 'error',
-									message: "这里只有一个子节点了，不能删除"
-								});
-								return;
+						if(category_id === this.tree[i].id) {
+							for(let j in this.tree[i].children) {
+								if(this.tree[i].children[j].id === parentId) {
+									// 保证每个父节点至少有一个子节点
+									let childlist = this.tree[i].children[j].children;
+									if(childlist.length === 1) {
+										this.$message({
+											type: 'error',
+											message: "这里只有一个子节点了，不能删除"
+										});
+										return;
+									}
+									// 删除子节点
+									var self = this,
+											params = {
+												id: data.id,
+												level: node.level
+											};
+									apiUrl.deleteTreeNode(params).then(function(res) {
+										self.$message({
+											type: 'success',
+											message: res.data.message
+										});
+										self.saveFathExpend(node);
+										self.init();
+										self.clickObj = '';
+									}).catch(function(res) {
+										self.$message({
+											type: 'error',
+											message: res.data.message
+										});
+									});
+								}
 							}
-							// 删除子节点
-							var self = this,
-									params = {
-										id: data.id,
-										isLeaf: node.isLeaf
-									};
-							apiUrl.deleteTreeNode(params).then(function(res) {
-								self.$message({
-									type: 'success',
-									message: res.data.message
-								});
-								self.saveFathExpend(node);
-								self.init();
-								self.clickObj = '';
-							}).catch(function(res) {
-								self.$message({
-									type: 'error',
-									message: res.data.message
-								});
-							});
+							
 						}
 					}
 				}).catch(() => {
@@ -358,14 +368,16 @@ export default {
             message: '已取消删除' + data.label
           });          
         });
-			} else { // 若是父节点
+			}
+
+			if(node.level === 2) { // 若是父节点
 			  this.$confirm(`你将删除的是父节点${data.label}, 你确定?`, '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
 					// 保证至少有一个父节点
-					if(node.parent.data.length === 1) {
+					if(node.parent.data.children.length === 1) {
 						this.$message({
 							type: 'error',
 							message: "只剩下一个父节点了，不能删除"
@@ -375,7 +387,7 @@ export default {
 					// 删除父节点
 					var self = this,
 							params = {
-								isLeaf: node.isLeaf,
+								level: node.level,
 								id: data.id,
 							};
 					apiUrl.deleteTreeNode(params).then(function(res) {
@@ -415,7 +427,7 @@ export default {
 			this.motifyNode = {
 				id: '',
 				newNodeName: '',
-				isLeaf: ''
+				level: ''
 			};
 			this.showShuttleDialog = false;
 			this.shuttleChildId = '';
@@ -434,7 +446,7 @@ export default {
 			    params = {
 						id: this.motifyNode.id,
 						label: this.motifyNode.newNodeName,
-						isLeaf: this.motifyNode.isLeaf
+						level: this.motifyNode.level
 					};
 			apiUrl.modifyTreeNode(params).then(function(res) {
 				self.showEditDialog = false;
@@ -442,7 +454,7 @@ export default {
 					type: 'success',
 					message: res.data.message
 				});
-				if(self.motifyNode.isLeaf) {  // 若是子节点，则把修改后的节点名传到子组件
+				if(self.motifyNode.level === 3) {  // 若是子节点，则把修改后的节点名传到子组件
 					self.clickObj.label = self.motifyNode.newNodeName;
 				}
 				self.init();

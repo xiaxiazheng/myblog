@@ -10,45 +10,73 @@ exports.getTree = function(req, res) {
       console.log(err);
       return;
     }
-    var sql = "SELECT * FROM tree ORDER BY f_sort, c_sort";
-    var array = [];
-    connection.query(sql, array, function(err, results) {
+    var sql1 = "SELECT * FROM category ORDER BY sort";
+    var array1 = [];
+    connection.query(sql1, array1, function(err, res1) {
       if(err) {
-        console.log("查询失败");
+        console.log("查询categroy失败");
         return;
       }
-      let list = [];
-      for(let i in results) {
-        let find = false;
-        if(i !== 0) {
-          for(let j in list) {
-            if(list[j].id === results[i].f_id) {
-              list[j].children.push({
-                id: results[i].c_id,
-                label: results[i].c_label,
-                sort: results[i].c_sort
-              });
-              find = true;
-              break;
+      var sql2 = "SELECT * FROM tree ORDER BY f_sort, c_sort";
+      var array2 = [];
+      connection.query(sql2, array2, function(err, res2) {
+        if(err) {
+          console.log("查询tree失败");
+          return;
+        }
+        /* 先把tree里的二级树整理好 */
+        let list = [];
+        for(let i in res2) {
+          let find = false;
+          if(i !== 0) {
+            for(let j in list) {
+              if(list[j].id === res2[i].f_id) {
+                list[j].children.push({
+                  id: res2[i].c_id,
+                  label: res2[i].c_label,
+                  sort: res2[i].c_sort,
+                  category_id: res2[i].category_id
+                });
+                find = true;
+                break;
+              }
             }
           }
+          if(!find) {
+            list.push({
+              id: res2[i].f_id,
+              label: res2[i].f_label,
+              sort: res2[i].f_sort,
+              category_id: res2[i].category_id,
+              children: [{
+                id: res2[i].c_id,
+                label: res2[i].c_label,
+                sort: res2[i].c_sort,
+                category_id: res2[i].category_id
+              }]
+            });
+          }
         }
-        if(!find) {
-          list.push({
-            id: results[i].f_id,
-            label: results[i].f_label,
-            sort: results[i].f_sort,
-            children: [{
-              id: results[i].c_id,
-              label: results[i].c_label,
-              sort: results[i].c_sort,
-            }]
+        /* 然后再把分类套在上面 */
+        let flist = [];
+        for(let item of res1) {
+          let clist = [];
+          for(let j in list) {
+            if(item.category_id === list[j].category_id) {
+              clist.push(list[j]);
+            }
+          }
+          flist.push({
+            id: item.category_id,
+            label: item.label,
+            sort: item.sort,
+            children: clist
           });
         }
-      }
-      res.json(list);
+        res.json(flist);
 
-      connection.release();
+        connection.release();
+      });
     });
   });
 };
@@ -63,10 +91,11 @@ exports.addTreeNode = function(req, res) {
     }
     var sql = '';
     var newchildId = Common.getRandomNum();
-    if(req.query.isLeaf === 'false') { // 若是父节点
-      sql = "INSERT INTO tree VALUES (" + Common.getRandomNum() + ", 'newNode', " + (parseInt(req.query.sort) + 1) + ", " + newchildId + ", 'newChildNode', " + 1 + ")";
-    } else { // 若是子节点
-      sql = "INSERT INTO tree VALUES (" + req.query.id + ", '" + req.query.label + "', " + req.query.f_sort + ", " + newchildId + ", 'newChildNode', " + (parseInt(req.query.c_sort) + 1) + ")";
+    if(req.query.level === '2') { // 若是父节点
+      sql = "INSERT INTO tree VALUES (" + Common.getRandomNum() + ", 'newNode', " + (parseInt(req.query.sort) + 1) + ", " + newchildId + ", 'newChildNode', " + 1 + ", " + req.query.category_id + ")";
+    }
+    if(req.query.level === '3') { // 若是子节点
+      sql = "INSERT INTO tree VALUES (" + req.query.id + ", '" + req.query.label + "', " + req.query.f_sort + ", " + newchildId + ", 'newChildNode', " + (parseInt(req.query.c_sort) + 1) + ", " + req.query.category_id + ")";
     }
     var array = [];
     connection.query(sql, array, function(err, results) {
@@ -98,9 +127,10 @@ exports.modifyTreeNode = function(req, res) {
       return;
     }
     var flag = '';
-    if(req.query.isLeaf === 'true') {
+    if(req.query.level === '3') {
       flag = 'c';
-    } else {
+    }
+    if(req.query.level === '2') {
       flag = 'f';
     }
     var sql = "UPDATE tree SET " + flag + "_label=? WHERE " + flag + "_id=?";
@@ -125,7 +155,7 @@ exports.deleteTreeNode = function(req, res) {
       console.log(err);
       return;
     }
-    if(req.query.isLeaf == 'false') { // 若为父节点
+    if(req.query.level === '2') { // 若为父节点
       // 先找到该父节点的所有子节点
       var sql = "SELECT c_id FROM tree WHERE f_id=?";
       var array = [req.query.id];
@@ -157,7 +187,8 @@ exports.deleteTreeNode = function(req, res) {
         res.json({ resultsCode: 'success', message: '删除成功' })
         connection.release();
       });
-    } else { // 若为子节点
+    }
+    if(req.query.level === '3') { // 若为子节点
       // 删除该子节点的具体信息
       var sql = "DELETE FROM cont WHERE c_id=?";
       var array = [req.query.id];
@@ -192,9 +223,10 @@ exports.changeSort = function(req, res) {
       return;
     }
     var flag = '';
-    if(req.query.isLeaf === 'true') {
+    if(req.query.level === '3') {
       flag = 'c';
-    } else {
+    }
+    if(req.query.level === '2') {
       flag = 'f';
     }
     var sql1 = "UPDATE tree SET " + flag + "_sort=? WHERE " + flag + "_id=?";
