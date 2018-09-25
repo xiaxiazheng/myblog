@@ -77,17 +77,23 @@ export default {
           params = {};
       // this.tree = treeData;
       apiUrl.getTree(params).then(function(res) {
-        self.tree = res.data;
+        // self.tree = res.data;
+        self.tree = [{
+          label: 'father',
+          children: res.data
+        }];
+        console.log(self.tree);
       }).catch(function(res) {
         console.log(res.message);
       });
     },
-    handleClick(a, b, c) {
-			let isLeaf = b.isLeaf;
+    handleClick(nodeObj, node, c) {
+      console.log(node);
+			let isLeaf = node.isLeaf;
 			if(isLeaf) {
-        this.clickObj = b.data;
+        this.clickObj = node.data;
         this.showTree = false;
-        this.title = b.data.label;
+        this.title = node.data.label;
       }
     },
     isShowTree() {
