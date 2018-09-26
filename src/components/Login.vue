@@ -54,7 +54,7 @@ export default {
       }).catch(function(res) {
         self.$message({
           type: 'error',
-          message: res.message
+          message: res.data.message
         });
       });
     }
@@ -89,7 +89,7 @@ export default {
       }).catch(function(res) {
         self.$message({
           type: 'error',
-          message: res.message
+          message: res.data.message
         });
       });
     },

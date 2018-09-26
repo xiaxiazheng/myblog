@@ -7,14 +7,14 @@ exports.getNodeCont = function(req, res) {
 	var sql = "SELECT * FROM cont WHERE c_id=? ORDER BY sort";
   db.pool.getConnection(function(err, connection) {
     if(err) {
-      console.log("连接数据库失败");
+      res.json({ resultsCode:'error', message:'连接数据库失败' });
       console.log(err);
       return;
     }
     var array = [req.query.id];
     connection.query(sql, array, function(err, results) {
       if(err) {
-        console.log("查询失败");
+        res.json({ resultsCode:'error', message:'查询cont失败' });
         return;
       }
       if(results.length !== 0) {
@@ -57,7 +57,7 @@ exports.addNodeCont = function(req, res) {
 	var sql = "INSERT INTO cont VALUES (" + req.body.id + ", '" + time + "', '" + time + "', '请输入标题', '请输入内容'," + (parseInt(req.body.sort) + 1) +")";
   db.pool.getConnection(function(err, connection) {
     if(err) {
-      console.log("连接数据库失败");
+      res.json({ resultsCode:'error', message:'连接数据库失败' });
       console.log(err);
       return;
     }
@@ -78,7 +78,7 @@ exports.addNodeCont = function(req, res) {
 exports.modifyNodeCont = function(req, res) {
   db.pool.getConnection(function(err, connection) {
     if(err) {
-      console.log("连接数据库失败");
+      res.json({ resultsCode:'error', message:'连接数据库失败' });
       console.log(err);
       return;
     }
@@ -87,7 +87,7 @@ exports.modifyNodeCont = function(req, res) {
     var array1 = [req.body.id];
     connection.query(sql1, array1, function(err, results1) {
       if(err) {
-        console.log("查询失败");
+        res.json({ resultsCode:'error', message:'查询cont失败' });
         return;
       }
       let isUpdate = false;
@@ -100,7 +100,7 @@ exports.modifyNodeCont = function(req, res) {
           var array2 = [req.body.list[i].title, cont, req.body.id, req.body.list[i].sort];
           connection.query(sql2, array2, function(err, results) {
             if(err) {
-              console.log("查询失败");
+              res.json({ resultsCode:'error', message:'查询cont失败' });
               return;
             }
           });
@@ -121,7 +121,7 @@ exports.modifyNodeCont = function(req, res) {
 exports.deleteNodeCont = function(req, res) {
   db.pool.getConnection(function(err, connection) {
     if(err) {
-      console.log("连接数据库失败");
+      res.json({ resultsCode:'error', message:'连接数据库失败' });
       console.log(err);
       return;
     }
@@ -143,7 +143,7 @@ exports.deleteNodeCont = function(req, res) {
 exports.changeSort = function(req, res) {
   db.pool.getConnection(function(err, connection) {
     if(err) {
-      console.log("连接数据库失败");
+      res.json({ resultsCode:'error', message:'连接数据库失败' });
       console.log(err);
       return;
     }
@@ -151,14 +151,14 @@ exports.changeSort = function(req, res) {
       var array1 = [req.query.otherSort, req.query.thiscTime];
       connection.query(sql1, array1, function(err, results) {
         if(err) {
-          console.log("查询失败");
+          res.json({ resultsCode:'error', message:'查询cont失败' });
           return;
         }
         var sql2 = "UPDATE cont SET sort=? WHERE cTime=?";
         var array2 = [req.query.thisSort, req.query.othercTime];
         connection.query(sql2, array2, function(err, results) {
           if(err) {
-            console.log("查询失败");
+            res.json({ resultsCode:'error', message:'查询cont失败' });
             return;
           }
           res.json({ resultsCode: 'success', message: '移动成功' })

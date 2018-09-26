@@ -120,23 +120,23 @@ export default {
   data() {
 		return {
 			tree: [],
-			isEdit: false,
-			clickObj: '', // 传给子组件的数据，包括子节点的id和label
+			isEdit: false,  // 切换编辑版和展示版
+			clickObj: '',  // 传给子组件的数据，包括子节点的id和label
 			defaultProps: {
 				children: 'children',
 				label: 'label'
 			},
 			// 保存当前默认展开的节点，不然一操作树init数据树就要折叠
 			expandedList: [],
-			// 节点改名
+			/* 节点改名 */
 			showEditDialog: false,
 			motifyNode: {
 				id: '',
 				newNodeName: '',
-				isLeaf: ''
+				level: ''
 			},
 			notice: '',
-			// 子节点穿梭
+			/* 子节点穿梭 */
 			fatherNodeList: [], // 子节点上一级的所有节点
 			showShuttleDialog: false,
 			shuttleLevel: 0,
@@ -158,17 +158,11 @@ export default {
           self.showAdmin = true;
           return;
         } else {
-          self.$message({
-            type: 'error',
-            message: "请重新登陆"
-          });
-          this.$router.replace({ path: 'login' });
+          self.msgTips(res);
+          self.$router.replace({ path: 'login' });
         }
       }).catch(function(res) {
-        self.$message({
-          type: 'error',
-          message: res.message
-        });
+        self.msgTips(res);
       });
     } else {
 			this.$router.replace({ path: 'login' });
@@ -198,7 +192,7 @@ export default {
 					}
 				}
       }).catch(function(res) {
-        console.log("初始化失败");
+				self.msgTips(res);
       });
 		},
 
@@ -264,21 +258,11 @@ export default {
 				params.sort = list[list.length - 1].sort;
 			}
 			apiUrl.addTreeNode(params).then(function(res) {
-				if(res.data.resultsCode === 'success') {
-					self.$message({
-						type: 'success',
-						message: res.data.message
-					})
-					self.saveFathExpend(node);
-					self.init();
-				} else {
-					self.$message({
-						type: 'error',
-						message: res.data.message
-					})
-				}
+				self.msgTips(res);
+				self.saveFathExpend(node);
+				self.init();
 			}).catch(function(res) {
-				console.log(res.message);
+				self.msgTips(res);
 			});
 		},
     // 删除节点
@@ -311,18 +295,12 @@ export default {
 												level: node.level
 											};
 									apiUrl.deleteTreeNode(params).then(function(res) {
-										self.$message({
-											type: 'success',
-											message: res.data.message
-										});
+										self.msgTips(res);
 										self.saveFathExpend(node);
 										self.init();
 										self.clickObj = '';
 									}).catch(function(res) {
-										self.$message({
-											type: 'error',
-											message: res.data.message
-										});
+										self.msgTips(res);
 									});
 								}
 							}
@@ -358,17 +336,12 @@ export default {
 								id: data.id,
 							};
 					apiUrl.deleteTreeNode(params).then(function(res) {
-						self.$message({
-							type: res.data.resultsCode,
-							message: res.data.message
-						});
+						self.msgTips(res);
 						self.saveFathExpend(node);
 						self.init();
+						self.clickObj = '';
 					}).catch(function(res) {
-						self.$message({
-							type: 'error',
-							message: res.data.message
-						});
+						self.msgTips(res);
 					});
         }).catch(() => {
           this.$message({
@@ -398,19 +371,13 @@ export default {
 								level: node.level,
 								id: data.id,
 							};
-					console.log(params);
 					apiUrl.deleteTreeNode(params).then(function(res) {
-						self.$message({
-							type: res.data.resultsCode,
-							message: res.data.message
-						});
+						self.msgTips(res);
 						self.saveFathExpend(node);
 						self.init();
+						self.clickObj = '';
 					}).catch(function(res) {
-						self.$message({
-							type: 'error',
-							message: res.data.message
-						});
+						self.msgTips(res);
 					});
         }).catch(() => {
           this.$message({
@@ -430,27 +397,18 @@ export default {
 				return;
 			}
 
+			/* 找到所有父级节点 */
 			this.fatherNodeList = node.parent.parent.childNodes;
-			if(node.level === 3) {  // 若是三级节点
-				this.choiceFathId = node.parent.data.id;
-				this.originFathId = this.choiceFathId;
-				this.shuttleChildId = data.id;
-				this.shuttleChildLabel = data.label;
-				this.shuttleLevel = 3;
-				this.showShuttleDialog = true;
+      /* 保存穿梭等级 */
+			this.shuttleLevel = node.level;
+			/* 保存现场 */
+			this.choiceFathId = node.parent.data.id;
+			this.originFathId = this.choiceFathId;
+			this.shuttleChildId = data.id;
+			this.shuttleChildLabel = data.label;
 
-				this.saveFathExpend(node);
-			}
-			if(node.level === 2) {  // 若是二级节点
-				this.choiceFathId = node.parent.data.id;
-				this.originFathId = this.choiceFathId;
-				this.shuttleChildId = data.id;
-				this.shuttleChildLabel = data.label;
-				this.shuttleLevel = 2;
-				this.showShuttleDialog = true;
-
-				this.saveFathExpend(node);
-			}
+			this.showShuttleDialog = true;
+			this.saveFathExpend(node);
 		},
 
 		// 上移
@@ -464,14 +422,11 @@ export default {
 						otherSort: node.previousSibling.data.sort
 					};
 			apiUrl.changeSort(params).then(function(res) {
-				self.$message({
-					type: 'success',
-					message: '上移成功'
-				});
+				self.msgTips(res);
 				self.saveFathExpend(node);
 				self.init();
 			}).catch(function(res) {
-				console.log("上移出错");
+				self.msgTips(res);
 			});
 		},
 		// 下移
@@ -485,14 +440,11 @@ export default {
 						otherSort: node.nextSibling.data.sort
 					};
 			apiUrl.changeSort(params).then(function(res) {
-				self.$message({
-					type: 'success',
-					message: '下移成功'
-				});
+				self.msgTips(res);
 				self.saveFathExpend(node);
 				self.init();
 			}).catch(function(res) {
-				console.log("下移出错");
+				self.msgTips(res);
 			});
 		},
 
@@ -525,20 +477,14 @@ export default {
 					};
 			apiUrl.modifyTreeNode(params).then(function(res) {
 				self.showEditDialog = false;
-				self.$message({
-					type: 'success',
-					message: res.data.message
-				});
+				self.msgTips(res);
 				if(self.motifyNode.level === 3) {  // 若是三级节点，则把修改后的节点名传到子组件
 					self.clickObj.label = self.motifyNode.newNodeName;
 				}
 				self.init();
 				self.motifyNode.newNodeName = '';
 			}).catch(function(res) {
-				self.$message({
-					type: 'error',
-					message: res.data.message
-				});
+				self.msgTips(res);
 			});
 		},
 		// 保存穿梭
@@ -586,17 +532,13 @@ export default {
 					}
 				}
 			}
-			console.log(params);
 			let self = this;
 			apiUrl.changeFather(params).then(function(res) {
-				self.$message({
-					type: 'success',
-					message: res.data.message
-				});
+				self.msgTips(res);
 				self.showShuttleDialog = false;
 				self.init();
 			}).catch(function(res) {
-				console.log("穿梭出错");
+				self.msgTips(res);
 			});
 		},
 
@@ -621,7 +563,15 @@ export default {
 					}
 				}
 			}
-		}
+		},
+
+		// 弹框提示
+		msgTips(res) {
+			this.$message({
+				type: res.data.resultsCode,
+				message: res.data.message
+			});
+		},
   },
 }
 </script>

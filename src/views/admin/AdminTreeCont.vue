@@ -62,7 +62,6 @@
 <script>
 import apiUrl from '@/api/url.js'
 import { setTimeout } from 'timers';
-// import { dataObject } from '@/mock.js'
 
 export default {
 	props: ['labelObj'],
@@ -84,7 +83,6 @@ export default {
 	},
 	methods: {
 		init() {
-			// this.contObj = dataObject;
 			if(this.labelObj !== '') {
 				var self = this,
 						params = {
@@ -92,11 +90,8 @@ export default {
 						};
 				apiUrl.getNodeCont(params).then(function(res) {
 					self.contObj = res.data;
-					// self.isModify = false;
-
-					// self.$watch('contObj',  function() { self.isModify = true; }, {deep: true});
 				}).catch(function(res) {
-					console.log(res.message);
+					self.msgTips(res);
 				});
 			}
 		},
@@ -108,18 +103,10 @@ export default {
 						sort: this.contObj.list[this.contObj.list.length - 1].sort,
 					};
 			apiUrl.addNodeCont(params).then(function(res) {
-				self.$message({
-					type: "success",
-					message: res.data.message
-				});
+				self.msgTips(res);
 				self.init();
-				// self.isModify = false;
-				// self.$watch('contObj', function(){self.isModify = true}, {deep: true});
 			}).catch(function(res) {
-				self.$message({
-					type: "error",
-					message: res.data.message
-				});
+				self.msgTips(res);
 			});
 		},
 		// 删除节点
@@ -135,20 +122,16 @@ export default {
 							sort: item.sort,
 						};
 				apiUrl.deleteNodeCont(params).then(function(res) {
-					self.$message({
-						type: "success",
-						message: '删除成功'
-					});
-					// self.contObj.list.splice(index, 1);
+					self.msgTips(res);
 					self.init();
 				}).catch(function(res) {
-					self.$message({
-						type: "error",
-						message: res
-					});
+					self.msgTips(res);
 				});
 			}).catch(() => {
-				console.log("已取消");
+				this.$message({
+					type: 'info',
+					message: '已取消删除'
+				});
 			});
 		},
 		// 上移节点
@@ -161,13 +144,10 @@ export default {
 						otherSort: this.contObj.list[index - 1].sort
 					};
 			apiUrl.changeContSort(params).then(function(res) {
-				self.$message({
-					type: 'success',
-					message: '上移成功'
-				});
+				self.msgTips(res);
 				self.init();
 			}).catch(function(res) {
-				console.log(res.data.message);
+				self.msgTips(res);
 			});
 		},
 		// 下移节点
@@ -180,13 +160,10 @@ export default {
 						otherSort: this.contObj.list[index + 1].sort
 					};
 			apiUrl.changeContSort(params).then(function(res) {
-				self.$message({
-					type: 'success',
-					message: '下移成功'
-				});
+				self.msgTips(res);
 				self.init();
 			}).catch(function(res) {
-				console.log(res.data.message);
+				self.msgTips(res);
 			});
 		},
 		// 先判断判断
@@ -207,18 +184,20 @@ export default {
 			var self = this,
 					params = this.contObj;
 			apiUrl.modifyNodeCont(params).then(function(res) {
-				self.$message({
-					type: "success",
-					message: res.data.message
-				});
+				self.msgTips(res);
 				setTimeout(function() {
 					self.init();
 				}, 1000);
 			}).catch(function(res) {
-				self.$message({
-					type: "error",
-					message: res.data.message
-				});
+				self.msgTips(res);
+			});
+		},
+
+		// 弹框提示
+		msgTips(res) {
+			this.$message({
+				type: res.data.resultsCode,
+				message: res.data.message
 			});
 		},
 	}

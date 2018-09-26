@@ -6,7 +6,7 @@ var Common = require('./common.js');
 exports.getTree = function(req, res) {
   db.pool.getConnection(function(err, connection) {
     if(err) {
-      console.log("连接数据库失败");
+      res.json({ resultsCode:'error', message:'连接数据库失败' });
       console.log(err);
       return;
     }
@@ -14,14 +14,14 @@ exports.getTree = function(req, res) {
     var array1 = [];
     connection.query(sql1, array1, function(err, res1) {
       if(err) {
-        console.log("操作categroy失败");
+        res.json({ resultsCode:'error', message:'查找失败，操作categroy失败' });
         return;
       }
       var sql2 = "SELECT * FROM tree ORDER BY f_sort, c_sort";
       var array2 = [];
       connection.query(sql2, array2, function(err, res2) {
         if(err) {
-          console.log("操作tree失败");
+          res.json({ resultsCode:'error', message:'查找失败，操作tree失败' });
           return;
         }
         /* 先把tree里的二级树整理好 */
@@ -85,7 +85,7 @@ exports.getTree = function(req, res) {
 exports.addTreeNode = function(req, res) {
   db.pool.getConnection(function(err, connection) {
     if(err) {
-      console.log("连接数据库失败");
+      res.json({ resultsCode:'error', message:'连接数据库失败' });
       console.log(err);
       return;
     }
@@ -98,14 +98,14 @@ exports.addTreeNode = function(req, res) {
       let array = [newcateId, 'newCategory', (parseInt(req.query.sort) + 1)];
       connection.query(sql, array, function(err, res1) {
         if(err) {
-          console.log("操作category失败");
+          res.json({ resultsCode:'error', message:'添加失败，操作category失败' });
           return;
         }
         sql = "INSERT INTO tree VALUES (?, ?, ?, ?, ?, ?, ?)";
         array = [newfathId, 'newNode', 1, newchildId, 'newChildNode', 1, newcateId];
         connection.query(sql, array, function(err, res2) {
           if(err) {
-            console.log("操作tree失败");
+            res.json({ resultsCode:'error', message:'添加失败，操作tree失败' });
             return;
           }
           let time = Common.getNowFormatDate();
@@ -113,7 +113,7 @@ exports.addTreeNode = function(req, res) {
           var array = [];
           connection.query(sql, array, function(err, res3) {
             if(err) {
-              console.log("操作cont失败");
+              res.json({ resultsCode:'error', message:'添加失败，操作cont失败' });
               return;
             }
             res.json({ resultsCode:'success', message:'添加成功' });
@@ -156,7 +156,7 @@ exports.addTreeNode = function(req, res) {
 exports.modifyTreeNode = function(req, res) {
   db.pool.getConnection(function(err, connection) {
     if(err) {
-      console.log("连接数据库失败");
+      res.json({ resultsCode:'error', message:'连接数据库失败' });
       console.log(err);
       return;
     }
@@ -166,11 +166,10 @@ exports.modifyTreeNode = function(req, res) {
       var array = [req.query.label, req.query.id];
       connection.query(sql, array, function(err, results) {
         if(err) {
-          console.log("操作失败");
+          res.json({ resultsCode:'error', message:'修改失败' });
           return;
         }
         res.json({ resultsCode:'success', message:'修改成功' });
-
         connection.release();
       });
     } else {
@@ -184,11 +183,10 @@ exports.modifyTreeNode = function(req, res) {
       var array = [req.query.label, req.query.id];
       connection.query(sql, array, function(err, results) {
         if(err) {
-          console.log("操作失败");
+          res.json({ resultsCode:'error', message:'修改失败' });
           return;
         }
         res.json({ resultsCode:'success', message:'修改成功' });
-
         connection.release();
       });
     }
@@ -200,7 +198,7 @@ exports.modifyTreeNode = function(req, res) {
 exports.deleteTreeNode = function(req, res) {
   db.pool.getConnection(function(err, connection) {
     if(err) {
-      console.log("连接数据库失败");
+      res.json({ resultsCode:'error', message:'连接数据库失败' });
       console.log(err);
       return;
     }
@@ -210,7 +208,7 @@ exports.deleteTreeNode = function(req, res) {
       var array = [req.query.id];
       connection.query(sql, array, function(err, res1) {
         if(err) {
-          res.json({ resultsCode: 'error', message: err.message })
+          res.json({ resultsCode:'error', message:'删除失败，操作tree失败1' });
           return;
         }
         // 再根据三级节点id逐个逐个删除三级节点的具体信息
@@ -219,7 +217,7 @@ exports.deleteTreeNode = function(req, res) {
           var array2 = [res1[i].c_id];
           connection.query(sql2, array2, function(err, res2) {
             if(err) {
-              res.json({ resultsCode: 'error', message: err.message })
+              res.json({ resultsCode: 'error', message: '删除失败，操作cont失败' });
               return;
             }
           });
@@ -230,17 +228,17 @@ exports.deleteTreeNode = function(req, res) {
       var array = [req.query.id];
       connection.query(sql, array, function(err, res1) {
         if(err) {
-          res.json({ resultsCode: 'error', message: err.message })
+          res.json({ resultsCode: 'error', message: '删除失败，操作tree失败2' });
           return;
         }
         // 最后删除category表上的一级节点
         var sql2 = "DELETE FROM category WHERE category_id=?";
         connection.query(sql2, array, function(err, res2) {
           if(err) {
-            res.json({ resultsCode: 'error', message: err.message })
+            res.json({ resultsCode: 'error', message: '删除失败，操作category失败' });
             return;
           }
-          res.json({ resultsCode: 'success', message: '删除成功' })
+          res.json({ resultsCode: 'success', message: '删除成功' });
           connection.release();
         });
       });
@@ -251,7 +249,7 @@ exports.deleteTreeNode = function(req, res) {
       var array = [req.query.id];
       connection.query(sql, array, function(err, results) {
         if(err) {
-          res.json({ resultsCode: 'error', message: err.message })
+          res.json({ resultsCode: 'error', message: '删除失败，操作tree失败1' });
           return;
         }
         // 再根据三级节点id逐个逐个删除三级节点的具体信息
@@ -260,7 +258,7 @@ exports.deleteTreeNode = function(req, res) {
           var array2 = [results[i].c_id];
           connection.query(sql2, array2, function(err, results) {
             if(err) {
-              res.json({ resultsCode: 'error', message: err.message })
+              res.json({ resultsCode: 'error', message: '删除失败，操作cont失败' });
               return;
             }
           });
@@ -271,10 +269,10 @@ exports.deleteTreeNode = function(req, res) {
       var array = [req.query.id];
       connection.query(sql, array, function(err, results) {
         if(err) {
-          res.json({ resultsCode: 'error', message: err.message })
+          res.json({ resultsCode: 'error', message: '删除失败，操作tree失败2' });
           return;
         }
-        res.json({ resultsCode: 'success', message: '删除成功' })
+        res.json({ resultsCode: 'success', message: '删除成功' });
         connection.release();
       });
     }
@@ -284,7 +282,7 @@ exports.deleteTreeNode = function(req, res) {
       var array = [req.query.id];
       connection.query(sql, array, function(err, results) {
         if(err) {
-          res.json({ resultsCode: 'error', message: err.message })
+          res.json({ resultsCode: 'error', message: '删除失败，操作cont失败' });
           return;
         }
       });
@@ -292,7 +290,7 @@ exports.deleteTreeNode = function(req, res) {
       var sql = "DELETE FROM tree WHERE c_id=?";
       connection.query(sql, array, function(err, results) {
         if(err) {
-          res.json({ resultsCode: 'error', message: err.message })
+          res.json({ resultsCode: 'error', message: '删除失败，操作tree失败' });
           return;
         }
         res.json({ resultsCode:'success', message:'删除成功' });
@@ -380,7 +378,7 @@ exports.changeFather = function(req, res) {
     }
     connection.query(sql, array, function(err, results) {
       if(err) {
-        console.log("操作失败");
+        console.log("穿梭失败");
         return;
       }
       res.json({ resultsCode: 'success', message: '穿梭成功' });

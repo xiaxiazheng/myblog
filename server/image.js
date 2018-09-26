@@ -20,19 +20,19 @@ exports.saveMainImg = function(req, res) {
         var sql = "INSERT INTO image VALUES (?, ?, ?, 'main', ?)";
         db.pool.getConnection(function(err, connection) {
           if(err) {
-            console.log("连接数据库失败");
+            res.json({ resultsCode: 'error', message: '连接数据库失败' });
             console.log(err);
             return;
           }
           var array = [img_id, req.file.originalname, filename, time];
           connection.query(sql, array, function(err, results) {
             if(err) {
-              console.log("保存图片信息失败");
+              res.json({ resultsCode: 'error', message: '保存图片信息失败' });
               return;
             }
             fs.unlink(req.file.path, function (err) {  // 删除缓存
-              if( err ) {
-                console.log( err );
+              if(err) {
+                res.json({ resultsCode: 'error', message: err });
               } else {
                 res.json({ resultsCode: 'success', message: '保存图片成功' });
               }
@@ -61,19 +61,19 @@ exports.saveWallImg = function(req, res) {
         var sql = "INSERT INTO image VALUES (?, ?, ?, 'wall', ?)";
         db.pool.getConnection(function(err, connection) {
           if(err) {
-            console.log("连接数据库失败");
+            res.json({ resultsCode: 'error', message: '连接数据库失败' });
             console.log(err);
             return;
           }
           var array = [img_id, req.file.originalname, filename, time];
           connection.query(sql, array, function(err, results) {
             if(err) {
-              console.log("保存图片信息失败");
+              res.json({ resultsCode: 'error', message: '保存图片信息失败' });
               return;
             }
             fs.unlink(req.file.path, function (err) {  // 删除缓存
-              if( err ) {
-                console.log( err );
+              if(err) {
+                res.json({ resultsCode: 'error', message: err });
               } else {
                 res.json({ resultsCode: 'success', message: '保存图片成功' });
               }
@@ -92,14 +92,14 @@ exports.getImgList = function(req, res) {
   var sql = "SELECT * FROM image WHERE type=? ORDER BY cTime";
   db.pool.getConnection(function(err, connection) {
     if(err) {
-      console.log("连接数据库失败");
+      res.json({ resultsCode: 'error', message: '连接数据库失败' });
       console.log(err);
       return;
     }
     var array = [req.query.type];
     connection.query(sql, array, function(err, results) {
       if(err) {
-        console.log("查询失败");
+        res.json({ resultsCode: 'error', message: '查询image失败' });
         return;
       }
       res.json(results);
@@ -125,14 +125,14 @@ exports.deleteImg = function(req, res) {
       var sql = "DELETE FROM image WHERE img_id=? && type=?";
       db.pool.getConnection(function(err, connection) {
         if(err) {
-          console.log("连接数据库失败");
+          res.json({ resultsCode: 'error', message: '连接数据库失败' });
           console.log(err);
           return;
         }
         var array = [req.query.img_id, req.query.type];
         connection.query(sql, array, function(err, results) {
           if(err) {
-            console.log("保存图片信息失败");
+            res.json({ resultsCode: 'error', message: '保存图片信息失败' });
             return;
           }
           res.json({ resultsCode: 'success', message: '删除成功' })
