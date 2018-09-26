@@ -42,7 +42,7 @@
 							type="text"
 							size="mini"
 							@click="() => shuttle(node, data)"
-							v-if="node.level === 3">
+							v-if="node.level !== 1">
 							<i class="el-icon-upload"></i>
 						</el-button>
 						<el-button
@@ -83,13 +83,17 @@
 			:visible.sync="showShuttleDialog"
 			width="30%"
 			:before-close="handleCloseDialog">
-			<span>请选择"{{shuttleChildLabel}}"要穿梭到的父节点：</span>
+			<span>请选择"{{shuttleChildLabel}}"要穿梭到的
+				<span v-if="shuttleLevel === 2">一级</span>
+				<span v-if="shuttleLevel === 3">二级</span>
+				节点：
+			</span>
 			<el-select v-model="choiceFathId">
 				<el-option
 					v-for="(item, index) in fatherNodeList"
 					:key="index"
-					:label="item.label"
-					:value="item.id">
+					:label="item.data.label"
+					:value="item.data.id">
 				</el-option>
 			</el-select>
 			<span slot="footer" class="dialog-footer">
@@ -115,16 +119,15 @@ export default {
 	},
   data() {
 		return {
-			isEdit: false,
-			clickObj: '', // 传给子组件的，包括子节点的id和label
 			tree: [],
-			fatherNodeList: [], // 所有的父节点
-			newChildLabel: '',
-			expandedList: [], // 保存当前默认展开的节点，不然一操作树init数据树就要折叠
+			isEdit: false,
+			clickObj: '', // 传给子组件的数据，包括子节点的id和label
 			defaultProps: {
 				children: 'children',
 				label: 'label'
 			},
+			// 保存当前默认展开的节点，不然一操作树init数据树就要折叠
+			expandedList: [],
 			// 节点改名
 			showEditDialog: false,
 			motifyNode: {
@@ -134,7 +137,9 @@ export default {
 			},
 			notice: '',
 			// 子节点穿梭
+			fatherNodeList: [], // 子节点上一级的所有节点
 			showShuttleDialog: false,
+			shuttleLevel: 0,
 			originFathId: '',
 			choiceFathId: '',
 			shuttleChildId: '',
@@ -181,19 +186,15 @@ export default {
       apiUrl.getTree(params).then(function(res) {
 				self.tree = res.data;
 				self.fatherNodeList = [];
-				// 给树设置属性
+				// 给树设置hover属性
 				for(let i in self.tree) {
+					Vue.set(self.tree[i], 'hovering', false);
 					for(let j in self.tree[i].children) {
 						// hovering
 						Vue.set(self.tree[i].children[j], 'hovering', false);
 						for(let k in self.tree[i].children[j].children) {
 							Vue.set(self.tree[i].children[j].children[k], 'hovering', false);
 						}
-						self.fatherNodeList.push({
-							id: self.tree[i].children[j].id,
-							label: self.tree[i].children[j].label,
-							sort: self.tree[i].children[j].sort
-						});
 					}
 				}
       }).catch(function(res) {
@@ -209,48 +210,6 @@ export default {
     hideIcon(item) {
       item.data.hovering = false;
 		},
-		
-		// 上移
-		up(node, data) {
-			var self = this,
-					params = {
-						level: node.level,
-						thisId: node.data.id,
-						thisSort: node.data.sort,
-						otherId: node.previousSibling.data.id,
-						otherSort: node.previousSibling.data.sort
-					};
-			apiUrl.changeSort(params).then(function(res) {
-				self.$message({
-					type: 'success',
-					message: '上移成功'
-				});
-				self.saveFathExpend(node);
-				self.init();
-			}).catch(function(res) {
-				console.log("上移出错");
-			});
-		},
-		// 下移
-		down(node, data) {
-			var self = this,
-					params = {
-						level: node.level,
-						thisId: node.data.id,
-						thisSort: node.data.sort,
-						otherId: node.nextSibling.data.id,
-						otherSort: node.nextSibling.data.sort
-					};
-			apiUrl.changeSort(params).then(function(res) {
-				self.$message({
-					type: 'success',
-					message: '下移成功'
-				});
-				self.init();
-			}).catch(function(res) {
-				console.log(res.data.message);
-			});
-		},
 
 		// 点击节点，三个参数分别为传递给 data 属性的数组中该节点所对应的对象、节点对应的 Node、节点组件本身。
 		handleClick(obj, node, component) {
@@ -263,10 +222,13 @@ export default {
 		motify(node, data) {
 			let level = node.level;
 			if(level === 3) {
-				this.notice = '修改子节点名称';
+				this.notice = '修改三级节点名称';
 			}
 			if(level === 2) {
-			  this.notice = '修改父节点名称';
+			  this.notice = '修改二级节点名称';
+			}
+			if(level === 1) {
+				this.notice = '修改一级节点名称';
 			}
 			this.motifyNode = {
 				id: data.id,
@@ -283,18 +245,23 @@ export default {
 			var self = this,
 			    params = {
 						level: node.level,
-						category_id: node.data.category_id
 					};
 			if(node.level === 3) {  // 若是子节点
 				params.id = node.parent.data.id;
 				params.label = node.parent.data.label;
 				params.f_sort = node.parent.data.sort;
+				params.category_id = node.data.category_id;
 				var list = node.parent.data.children;
 				params.c_sort = list[list.length - 1].sort; // 传当前父节点的最后一个子节点的sort过去
 			}
 			if(node.level === 2) { // 若是父节点
+				params.category_id = node.data.category_id;
 				var list = node.parent.data.children;
 				params.sort = list[list.length - 1].sort; // 传最后一个父节点的sort过去
+			}
+			if(node.level === 1) { // 若是一大类
+				var list = node.parent.data;
+				params.sort = list[list.length - 1].sort;
 			}
 			apiUrl.addTreeNode(params).then(function(res) {
 				if(res.data.resultsCode === 'success') {
@@ -317,7 +284,7 @@ export default {
     // 删除节点
 		remove(node, data) {
 			if(node.level === 3) { // 若是叶子节点
-				this.$confirm(`你将删除的是子节点${data.label}, 你确定?`, '提示', {
+				this.$confirm(`你将删除的是三级节点${data.label}, 你确定?`, '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
@@ -333,7 +300,7 @@ export default {
 									if(childlist.length === 1) {
 										this.$message({
 											type: 'error',
-											message: "这里只有一个子节点了，不能删除"
+											message: "这里只有一个三级节点了，不能删除"
 										});
 										return;
 									}
@@ -370,21 +337,21 @@ export default {
         });
 			}
 
-			if(node.level === 2) { // 若是父节点
-			  this.$confirm(`你将删除的是父节点${data.label}, 你确定?`, '提示', {
+			if(node.level === 2) { // 若是二级节点
+			  this.$confirm(`你将删除的是二级节点${data.label}, 你确定?`, '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-					// 保证至少有一个父节点
+					// 保证至少有一个二级节点
 					if(node.parent.data.children.length === 1) {
 						this.$message({
 							type: 'error',
-							message: "只剩下一个父节点了，不能删除"
+							message: "只剩下一个二级节点了，不能删除"
 						});
 						return;
 					}
-					// 删除父节点
+					// 删除二级节点
 					var self = this,
 							params = {
 								level: node.level,
@@ -395,6 +362,49 @@ export default {
 							type: res.data.resultsCode,
 							message: res.data.message
 						});
+						self.saveFathExpend(node);
+						self.init();
+					}).catch(function(res) {
+						self.$message({
+							type: 'error',
+							message: res.data.message
+						});
+					});
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除' + data.label
+          });          
+        });
+			}
+
+			if(node.level === 1) { // 若是一级节点
+				this.$confirm(`你将删除的是一级节点${data.label}, 你确定?`, '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+					// 保证至少有一个一级节点
+					if(node.parent.childNodes.length === 1) {
+						this.$message({
+							type: 'error',
+							message: "只剩下一个一级节点了，不能删除"
+						});
+						return;
+					}
+					// 删除一级节点
+					var self = this,
+							params = {
+								level: node.level,
+								id: data.id,
+							};
+					console.log(params);
+					apiUrl.deleteTreeNode(params).then(function(res) {
+						self.$message({
+							type: res.data.resultsCode,
+							message: res.data.message
+						});
+						self.saveFathExpend(node);
 						self.init();
 					}).catch(function(res) {
 						self.$message({
@@ -412,13 +422,78 @@ export default {
 		},
 		// 穿梭节点
 		shuttle(node, data) {
-			this.choiceFathId = node.parent.data.id;
-			this.originFathId = this.choiceFathId;
-			this.shuttleChildId = data.id;
-			this.shuttleChildLabel = data.label;
-			this.showShuttleDialog = true;
+			if(node.parent.childNodes.length === 1) {
+				this.$message({
+					type: 'warning',
+					message: '当前节点的父节点只有这一个子节点，不能穿梭'
+				});
+				return;
+			}
 
-			this.saveFathExpend(node);
+			this.fatherNodeList = node.parent.parent.childNodes;
+			if(node.level === 3) {  // 若是三级节点
+				this.choiceFathId = node.parent.data.id;
+				this.originFathId = this.choiceFathId;
+				this.shuttleChildId = data.id;
+				this.shuttleChildLabel = data.label;
+				this.shuttleLevel = 3;
+				this.showShuttleDialog = true;
+
+				this.saveFathExpend(node);
+			}
+			if(node.level === 2) {  // 若是二级节点
+				this.choiceFathId = node.parent.data.id;
+				this.originFathId = this.choiceFathId;
+				this.shuttleChildId = data.id;
+				this.shuttleChildLabel = data.label;
+				this.shuttleLevel = 2;
+				this.showShuttleDialog = true;
+
+				this.saveFathExpend(node);
+			}
+		},
+
+		// 上移
+		up(node, data) {
+			var self = this,
+					params = {
+						level: node.level,
+						thisId: node.data.id,
+						thisSort: node.data.sort,
+						otherId: node.previousSibling.data.id,
+						otherSort: node.previousSibling.data.sort
+					};
+			apiUrl.changeSort(params).then(function(res) {
+				self.$message({
+					type: 'success',
+					message: '上移成功'
+				});
+				self.saveFathExpend(node);
+				self.init();
+			}).catch(function(res) {
+				console.log("上移出错");
+			});
+		},
+		// 下移
+		down(node, data) {
+			var self = this,
+					params = {
+						level: node.level,
+						thisId: node.data.id,
+						thisSort: node.data.sort,
+						otherId: node.nextSibling.data.id,
+						otherSort: node.nextSibling.data.sort
+					};
+			apiUrl.changeSort(params).then(function(res) {
+				self.$message({
+					type: 'success',
+					message: '下移成功'
+				});
+				self.saveFathExpend(node);
+				self.init();
+			}).catch(function(res) {
+				console.log("下移出错");
+			});
 		},
 
 		// 处理关闭dialog
@@ -454,7 +529,7 @@ export default {
 					type: 'success',
 					message: res.data.message
 				});
-				if(self.motifyNode.level === 3) {  // 若是子节点，则把修改后的节点名传到子组件
+				if(self.motifyNode.level === 3) {  // 若是三级节点，则把修改后的节点名传到子组件
 					self.clickObj.label = self.motifyNode.newNodeName;
 				}
 				self.init();
@@ -475,34 +550,44 @@ export default {
 				});
 				return;
 			}
-			for(let item of this.tree) {
-				if(item.id === this.originFathId) {
-					if(item.children.length === 1) {
-						this.$message({
-							type: 'warning',
-							message: '待穿梭节点的父节点只有这一个子节点，不能穿梭'
-						});
-						return;
+			let params = {};
+			if(this.shuttleLevel === 2) {
+				for(let item of this.tree) {  // 二级节点穿梭，就要到一级节点找穿梭到的节点
+					if(item.id === this.choiceFathId) {
+						params = {
+								category_id: item.id,
+								f_sort:  item.children[item.children.length - 1].sort + 1,
+								f_id: this.shuttleChildId,
+								shuttleLevel: this.shuttleLevel
+							}
+						break;
 					}
 				}
 			}
-			let fatherNode = {};
-			let newchildsort = '';
-			for(let item of this.tree) {
-				if(item.id === this.choiceFathId) {
-					fatherNode = item;
-					newchildsort = item.children[item.children.length - 1].sort;
-					break;
+			if(this.shuttleLevel === 3) {  // 三级节点穿梭，就要到二级节点找穿梭到的节点
+				for(let item of this.tree) {
+					let isfind = false;
+					for(let jtem of item.children) {
+						if(jtem.id === this.choiceFathId) {
+							params = {
+								fatherid: jtem.id,
+								fatherlabel: jtem.label,
+								fathersort: jtem.sort,
+								newchildsort: jtem.children[jtem.children.length - 1].sort + 1,
+								childid: this.shuttleChildId,
+								shuttleLevel: this.shuttleLevel,
+							}
+							isfind = true;
+							break;
+						}
+					}
+					if(isfind) {
+						break;
+					}
 				}
 			}
-			var self = this,
-			    params = {
-						fatherid: fatherNode.id,
-						fatherlabel: fatherNode.label,
-						fathersort: fatherNode.sort,
-						newchildsort: newchildsort + 1,
-						childid: this.shuttleChildId
-					};
+			console.log(params);
+			let self = this;
 			apiUrl.changeFather(params).then(function(res) {
 				self.$message({
 					type: 'success',
@@ -515,18 +600,25 @@ export default {
 			});
 		},
 
-		// 保存当前父节点们的展开状态
+		// 保存当前一二级节点们的展开状态
 		saveFathExpend(node) {
 			let list = [];
-			if(!node.isLeaf) {  // 父节点
+			if(node.level === 1) {  // 一级节点
 				list = node.parent.childNodes;
-			} else {  // 子节点
+			} else if(node.level === 2) {  // 二级节点
 				list = node.parent.parent.childNodes;
+			} else {  // 三级节点
+				list = node.parent.parent.parent.childNodes;
 			}
 			this.expandedList = [];
 			for(let item of list) {
 				if(item.expanded) {
 					this.expandedList.push(item.data.id);
+				}
+				for(let jtem of item.childNodes) {
+					if(jtem.expanded) {
+						this.expandedList.push(jtem.data.id);
+					}
 				}
 			}
 		}
