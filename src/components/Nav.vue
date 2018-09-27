@@ -8,8 +8,13 @@
         </span>
       </div>
       <div class="rightside">
-        <span class="tabItem" :class="{'active': activeTab === 'tree'}" @click="clickTabs('Tree')">知识树</span>
-        <span class="tabItem" :class="{'active': activeTab === 'photowall'}" @click="clickTabs('PhotoWall')">图片墙</span>
+        <el-input
+          placeholder="请输入内容"
+          prefix-icon="el-icon-search"
+          v-model="searchkeyword">
+        </el-input>
+        <span class="tabItem" :class="{'active': activeTab === 'Tree'}" @click="clickTabs('Tree')">知识树</span>
+        <span class="tabItem" :class="{'active': activeTab === 'PhotoWall'}" @click="clickTabs('PhotoWall')">图片墙</span>
         <a href="https://github.com/xiaxiazheng/myblog">
           GitHub
           <i class="el-icon-loading"></i>
@@ -24,8 +29,8 @@
         </span>
       </div>
       <div class="rightside">
-        <span class="tabItem" :class="{'active': activeTab === 'tree'}" @click="clickTabs('AdminTree')">知识树</span>
-        <span class="tabItem" :class="{'active': activeTab === 'photowall'}" @click="clickTabs('AdminPhotoWall')">图片墙</span>
+        <span class="tabItem" :class="{'active': activeTab === 'Tree'}" @click="clickTabs('AdminTree')">知识树</span>
+        <span class="tabItem" :class="{'active': activeTab === 'PhotoWall'}" @click="clickTabs('AdminPhotoWall')">图片墙</span>
         <a href="https://github.com/xiaxiazheng/myblog">
           GitHub
           <i class="el-icon-loading"></i>
@@ -41,7 +46,8 @@ export default {
   name: 'Nav',
   data() {
     return {
-      activeTab: ''
+      activeTab: '',
+      searchkeyword: '',
     }
   },
   props: ["type"],
@@ -57,13 +63,14 @@ export default {
     clickTabs(tabName) {
       this.$router.push({ name: tabName });
       this.activeTab = tabName;
+      console.log(this.activeTab);
     }
   }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="less" scoped>
+<style lang="less">
   .nav {
     height: 3.6rem;
     padding: .7rem 1.5rem;
@@ -101,6 +108,13 @@ export default {
           font-size: .9rem;
           text-decoration: none;
           color: black;
+        }
+        .el-input {
+          width: auto;
+          .el-input__inner {
+            height: 35px;
+            border-radius: 25px;
+          }
         }
       }
     }

@@ -77,17 +77,14 @@ export default {
           params = {};
       apiUrl.getTree(params).then(function(res) {
         self.tree = res.data;
-        // self.tree = [{
-        //   label: 'father',
-        //   children: res.data
-        // }];
-        console.log(self.tree);
       }).catch(function(res) {
-        console.log(res.message);
+        self.$message({
+          type: 'error',
+          message: '初始化树失败'
+        });
       });
     },
     handleClick(nodeObj, node, c) {
-      console.log(node);
 			let isLeaf = node.isLeaf;
 			if(isLeaf) {
         this.clickObj = node.data;
