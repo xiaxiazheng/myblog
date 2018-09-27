@@ -1,4 +1,3 @@
-import axios from 'axios'
 // 后台启动的服务地址
 import { baseUrl } from '@/config.js'
 

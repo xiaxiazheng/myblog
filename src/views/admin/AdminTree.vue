@@ -105,11 +105,9 @@
 </template>
 
 <script>
-//import Vue from 'vue'
 import AdminTreeCont from './AdminTreeCont'
 import TreeCont from '../home/TreeCont'
 import apiUrl from '@/api/url.js'
-// import { treeData } from '@/mock.js'
 
 export default {
 	name: 'Admin',

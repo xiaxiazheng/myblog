@@ -61,7 +61,6 @@
 
 <script>
 import apiUrl from '@/api/url.js'
-import { setTimeout } from 'timers';
 
 export default {
 	props: ['labelObj'],
