@@ -8,7 +8,6 @@
 <script>
 import apiUrl from '@/api/url.js'
 import Nav from "@/components/Nav";
-import { Base64 } from 'js-base64';
 
 export default {
 	name: 'Admin',
@@ -25,7 +24,7 @@ export default {
       var self = this,
         params = {
           username: sessionStorage.getItem("xia_username"),
-          userpword: Base64.decode(sessionStorage.getItem("xia_password"))
+          userpword: window.atob(sessionStorage.getItem("xia_password"))
         };
       apiUrl.postLogin(params).then(function(res) {
         if(res.data.resultsCode === "success") {

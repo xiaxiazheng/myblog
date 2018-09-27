@@ -151,7 +151,7 @@ export default {
       var self = this,
         params = {
           username: sessionStorage.getItem("xia_username"),
-          userpword: Base64.decode(sessionStorage.getItem("xia_password"))
+					userpword: window.atob(sessionStorage.getItem("xia_password"))
         };
       apiUrl.postLogin(params).then(function(res) {
         if(res.data.resultsCode === "success") {

@@ -17,7 +17,6 @@
 </template>
 
 <script>
-import { Base64 } from 'js-base64';
 import apiUrl from '@/api/url.js'
 import Admin from '@/views/Admin'
 
@@ -38,7 +37,7 @@ export default {
       var self = this,
         params = {
           username: sessionStorage.getItem("xia_username"),
-          userpword: Base64.decode(sessionStorage.getItem("xia_password"))
+          userpword: window.atob(sessionStorage.getItem("xia_password"))
         };
       apiUrl.postLogin(params).then(function(res) {
         if(res.data.resultsCode === "success") {
@@ -73,7 +72,7 @@ export default {
         if(res.data.resultsCode === "success") {
           self.$router.replace({ path: 'admin' });
           sessionStorage.setItem("xia_username", self.username);
-          sessionStorage.setItem("xia_password", Base64.encode(self.userpword));
+          sessionStorage.setItem("xia_password", window.btoa(self.userpword));
         } else if(res.data.resultsCode === "error") {
           self.$message({
             type: 'error',
