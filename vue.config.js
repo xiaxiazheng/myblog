@@ -9,7 +9,6 @@ module.exports = {
       'vue': 'Vue',
       'ELEMENT': 'element-ui',
       'VueRouter': 'VueRouter',
-      // 'highlight': 'hljs'
     },
   }
 }
