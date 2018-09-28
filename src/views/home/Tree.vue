@@ -74,7 +74,9 @@ export default {
         this.isPC = true;
       }
       var self = this,
-          params = {};
+          params = {
+            type: 'home'
+          };
       apiUrl.getTree(params).then(function(res) {
         self.tree = res.data;
       }).catch(function(res) {

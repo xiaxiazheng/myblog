@@ -61,6 +61,9 @@ exports.getTree = function(req, res) {
         let flist = [];
         for(let item of res1) {
           let clist = [];
+          if(item.label === 'My Secret Place' && req.query.type === 'home') {
+            continue;
+          }
           for(let j in list) {
             if(item.category_id === list[j].category_id) {
               clist.push(list[j]);

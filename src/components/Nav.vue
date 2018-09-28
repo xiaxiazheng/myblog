@@ -9,7 +9,7 @@
       </div>
       <div class="rightside">
         <el-input
-          placeholder="请输入内容"
+          placeholder="暂时没想好怎么做"
           prefix-icon="el-icon-search"
           v-model="searchkeyword">
         </el-input>
@@ -29,8 +29,8 @@
         </span>
       </div>
       <div class="rightside">
-        <span class="tabItem" :class="{'active': activeTab === 'Tree'}" @click="clickTabs('AdminTree')">知识树</span>
-        <span class="tabItem" :class="{'active': activeTab === 'PhotoWall'}" @click="clickTabs('AdminPhotoWall')">图片墙</span>
+        <span class="tabItem" :class="{'active': activeTab === 'AdminTree'}" @click="clickTabs('AdminTree')">知识树</span>
+        <span class="tabItem" :class="{'active': activeTab === 'AdminPhotoWall'}" @click="clickTabs('AdminPhotoWall')">图片墙</span>
         <a href="https://github.com/xiaxiazheng/myblog">
           GitHub
           <i class="el-icon-loading"></i>
@@ -63,7 +63,6 @@ export default {
     clickTabs(tabName) {
       this.$router.push({ name: tabName });
       this.activeTab = tabName;
-      console.log(this.activeTab);
     }
   }
 }

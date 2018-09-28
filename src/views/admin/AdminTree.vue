@@ -174,7 +174,9 @@ export default {
 	methods: {
 		init() {
 			var self = this,
-          params = {};
+          params = {
+						type: 'admin'
+					};
       apiUrl.getTree(params).then(function(res) {
 				self.tree = res.data;
 				self.fatherNodeList = [];
