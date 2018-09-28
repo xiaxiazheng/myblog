@@ -29,6 +29,7 @@ exports.getNodeCont = function(req, res) {
                 sort: results[0].sort,
                 createtime: results[0].cTime,
                 motifytime: results[0].mTime,
+                filename: results[0].filename
               }]
             };
             continue;
@@ -39,6 +40,7 @@ exports.getNodeCont = function(req, res) {
             sort: results[i].sort,
             createtime: results[i].cTime,
             motifytime: results[i].mTime,
+            filename: results[i].filename
           });
         }
         res.json(contObj);
@@ -54,7 +56,7 @@ exports.getNodeCont = function(req, res) {
 // 增
 exports.addNodeCont = function(req, res) {
   let time = Common.getNowFormatDate();
-	var sql = "INSERT INTO cont VALUES (" + req.body.id + ", '" + time + "', '" + time + "', '请输入标题', '请输入内容'," + (parseInt(req.body.sort) + 1) +")";
+	var sql = "INSERT INTO cont VALUES (" + req.body.id + ", '" + time + "', '" + time + "', '请输入标题', '请输入内容'," + (parseInt(req.body.sort) + 1) +", '')";
   db.pool.getConnection(function(err, connection) {
     if(err) {
       res.json({ resultsCode:'error', message:'连接数据库失败' });

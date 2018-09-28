@@ -86,6 +86,46 @@ exports.saveWallImg = function(req, res) {
     });
   });
 };
+// 树详细内容的，treeCont
+exports.saveTreeContImg = function(req, res) {
+  // console.log(req.file);  /* 上传的文件信息 */
+  let nameArray = req.file.originalname.split(".");
+  let filename = nameArray[0] + req.file.c_id + "." + nameArray[1];  /* 现在要想办法拿到c_id了 */
+  let des_file = __dirname + "/img/treecont/" + filename; /* 这里要注意，因为这个文件已经在server里了，所以这里的__dirname是有server的 */
+  fs.readFile(req.file.path, function (err, data) {
+    fs.writeFile(des_file, data, function (err) {
+      if(err){
+        res.json({ resultsCode: 'error', message: '保存本地图片失败' });
+      } else {
+        let time = Common.getNowFormatDate();
+        db.pool.getConnection(function(err, connection) {
+          if(err) {
+            res.json({ resultsCode: 'error', message: '连接数据库失败' });
+            console.log(err);
+            return;
+          }
+          var sql = "UPDATE cont SET filename=?, mTime=? WHERE c_id=?";
+          var array = [filename, time, req.file.c_id];
+          connection.query(sql, array, function(err, results) {
+            if(err) {
+              res.json({ resultsCode: 'error', message: '保存图片信息失败' });
+              return;
+            }
+            fs.unlink(req.file.path, function (err) {  // 删除缓存
+              if(err) {
+                res.json({ resultsCode: 'error', message: err });
+              } else {
+                res.json({ resultsCode: 'success', message: '保存图片成功' });
+              }
+            });
+
+            connection.release();
+          });
+        });
+      }
+    });
+  });
+};
 
 // 获取某个type的所有图片名称，然后可以通过express静态资源获取
 exports.getImgList = function(req, res) {
@@ -109,7 +149,7 @@ exports.getImgList = function(req, res) {
   });
 };
 
-// 删除某张图片，删掉本地的还要删掉数据库的
+// 删除某张图片，删掉本地的还要删掉image数据库的记录
 exports.deleteImg = function(req, res) {
   let des_file = '';
   if(req.query.type === 'main') {
@@ -133,6 +173,35 @@ exports.deleteImg = function(req, res) {
         connection.query(sql, array, function(err, results) {
           if(err) {
             res.json({ resultsCode: 'error', message: '保存图片信息失败' });
+            return;
+          }
+          res.json({ resultsCode: 'success', message: '删除成功' })
+
+          connection.release();
+        });
+      });
+    }
+  });
+}
+
+// 删除树的某图片，删掉本地的图片，还要把cont数据库的对应filename设为''
+exports.deleteTreeContImg = function(req, res) {
+  let des_file = __dirname + "/img/treecont/" + req.query.filename;
+  fs.unlink(des_file, function (err) {
+    if(err){
+      res.json({ resultsCode: 'error', message: '删除本地图片失败' });
+    } else {
+      db.pool.getConnection(function(err, connection) {
+        if(err) {
+          res.json({ resultsCode: 'error', message: '连接数据库失败' });
+          console.log(err);
+          return;
+        }
+        var sql = "UPDATE cont SET filename='' WHERE filename=?";
+        var array = [req.query.filename];
+        connection.query(sql, array, function(err, results) {
+          if(err) {
+            res.json({ resultsCode: 'error', message: '更改cont的filename为\'\'失败' });
             return;
           }
           res.json({ resultsCode: 'success', message: '删除成功' })

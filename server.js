@@ -90,8 +90,14 @@ app.get('/', function(req, res) {
 	app.get('/getimglist', function(req, res) {
 		image.getImgList(req, res);
 	});
-	app.get('/deleteimg', function(req, res) {
+	app.get('/deleteimg', function(req, res) { // 删除main和wall的
 		image.deleteImg(req, res);
+	});
+  app.get('treecont_upload', function(req, res) {
+    image.saveTreeContImg(req, res);
+	});
+	app.get('/deletetreecontimg', function(req, res) { // 删除treecont的
+		image.deleteTreeContImg(req, res);
 	});
 /* 结束 */
 

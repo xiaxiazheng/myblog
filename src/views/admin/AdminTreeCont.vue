@@ -12,6 +12,7 @@
 						placeholder="请输入内容"
 						v-model="item.cont">
 					</el-input>
+					<!-- 左下角的各种控制按键 -->
 					<div class="ctrlbox">
 						<span class="iconbox">
 							<el-button
@@ -44,6 +45,20 @@
 							<span>{{item.motifytime}}</span>
 						</span>
 					</div>
+					<!-- 上传图片的组件 -->
+					<div class="uploadtreecontimg">
+						<el-upload
+							:action="uploadUrl"
+							name="image"
+							list-type="picture-card"
+							:on-preview="handlePictureCardPreview"
+							:on-success="handleSuccess"
+							:on-error="handleError"
+							:before-remove="handleRemove"
+							:file-list="imgUrllist">
+							<i class="el-icon-plus"></i>
+						</el-upload>
+					</div>
 				</li>
 			</ul>
 			<div class="button">
@@ -52,6 +67,10 @@
 			<div class="save">
 				<el-button type="primary" @click="judge" :disabled="!isModify" icon="el-icon-check"></el-button>
 			</div>
+			<!-- 图片看大图 -->
+			<el-dialog :visible.sync="dialogVisible" :title="dialogImageName">
+				<img width="100%" :src="dialogImageUrl" alt="">
+			</el-dialog>
 		</div>
 		<div v-else>
 			<h2>Welcome !</h2>
@@ -68,6 +87,12 @@ export default {
     return {
 			contObj: {},
 			isModify: true,
+			// 图片相关
+			imgUrllist: [],
+			uploadUrl: '',
+			dialogVisible: false,
+			dialogImageName: '', 
+			dialogImageUrl: '',
     }
 	},
 	mounted() {
@@ -89,6 +114,7 @@ export default {
 						};
 				apiUrl.getNodeCont(params).then(function(res) {
 					self.contObj = res.data;
+					console.log(self.contObj);
 				}).catch(function(res) {
 					self.msgTips(res);
 				});
@@ -199,6 +225,66 @@ export default {
 				message: res.data.message
 			});
 		},
+
+		/** 图片操作 */
+		// 点击查看大图
+    handlePictureCardPreview(file) {
+      this.dialogImageUrl = file.url;
+      this.dialogImageName = file.imgname;
+      this.dialogCTime = file.cTime;
+      this.dialogVisible = true;
+    },
+    // 上传成功后
+    handleSuccess(response, file, fileList) {
+      this.$message({
+        type: "success",
+        message: "上传成功"
+      });
+      this.init();
+    },
+    // 上传失败后
+    handleError(err, file, fileList) {
+      this.$message({
+        type: "error",
+        message: "上传失败"
+      });
+      this.init();
+    },
+    // 删除图片后
+    handleRemove(file, fileList) {
+      /* 如果不是服务器上的图片，就直接删除 */
+      if(file.status === 'ready') {
+        return true;
+      }
+
+      this.$confirm('此操作将永久删除该文件' + file.imgname + ', 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        let self = this,
+            params = {
+              type: this.type,
+              img_id: file.img_id,
+              filename: file.filename
+            };
+        apiUrl.deleteImg(params).then(function(res) {
+          self.$message({
+            type: 'success',
+            message: '删除成功'
+          });
+          self.init();
+        }).catch(function(res) {
+          console.log(res);
+        });
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        });
+      });
+      return false;
+    },
 	}
 }
 </script>
