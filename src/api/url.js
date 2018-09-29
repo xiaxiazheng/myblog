@@ -48,4 +48,7 @@ export default {
   deleteImg(params) {
     return axios.get(baseUrl + '/deleteimg', {params});
   },
+  deleteTreeContImg(params) {
+    return axios.get(baseUrl + '/deletetreecontimg', {params});
+  },
 }

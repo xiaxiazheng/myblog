@@ -13,6 +13,10 @@
 						</span>
 					</h2>
 					<p v-html="item.cont" v-highlight></p>
+					<div v-if="item.filename" class="imgbox">
+            <img :src="baseImgUrl + item.filename" alt="">
+						<span>{{ getRealImgName(item.filename) }}</span>
+					</div>
 				</li>
 			</ul>
 		</div>
@@ -24,13 +28,14 @@
 
 <script>
 import apiUrl from '@/api/url.js'
-// import { dataObject } from '@/mock.js'
+import { baseUrl } from '@/config.js'
 
 export default {
 	props: ['labelObj', 'isPC'],
   data() {
     return {
-      contObj: []
+			contObj: [],
+			baseImgUrl: baseUrl + '/treecont/'
     }
 	},
 	mounted() {
@@ -45,7 +50,6 @@ export default {
 	},
 	methods: {
 		init() {
-			// this.contObj = dataObject;
 			if(this.labelObj) {
 				var self = this,
 						params = {
@@ -61,11 +65,22 @@ export default {
 						self.contObj.list[i].cont = self.contObj.list[i].cont.replace(/  /g, "&nbsp;&nbsp;"); // 把空格转成实体字符，以防多空格被合并
 						self.contObj.list[i].cont = self.contObj.list[i].cont.replace(/\n|\r\n/g, "<br/>"); // 把换行转成br标签
 					}
+					console.log(self.contObj)
 				}).catch(function(res) {
-					console.log(res.message);
+					self.$message({
+						type: 'error',
+						message: '初始化出错'
+					});
 				});
 			}
 		},
+		/* */
+		getRealImgName(filename) {
+			if(filename) {
+				let qianzhui = filename.split('-')[0];
+				return qianzhui.substr(0, qianzhui.length - this.contObj.id.length);
+			}
+		}
 	}
 }
 </script>
@@ -96,6 +111,21 @@ export default {
 			margin-top: 20px;
 			li {
 				margin: 20px 0;
+				.imgbox {
+					height: 314px;
+					margin: 0 auto;
+					overflow: hidden;
+					text-align: center;
+					img {
+						display: inherit;
+						height: calc(100% - 14px);
+						margin: 0 auto;
+					}
+					span {
+						font-size: 12px;
+						color: #ccc;
+					}
+				}
 			}
 		}
 		p {

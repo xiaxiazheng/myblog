@@ -90,12 +90,18 @@ exports.saveWallImg = function(req, res) {
 exports.saveTreeContImg = function(req, res) {
   // console.log(req.file);  /* 上传的文件信息 */
   let nameArray = req.file.originalname.split(".");
-  let filename = nameArray[0] + req.file.c_id + "." + nameArray[1];  /* 现在要想办法拿到c_id了 */
+  let filename = nameArray[0] + req.body.c_id + '-' + req.body.sort + "." + nameArray[1];
   let des_file = __dirname + "/img/treecont/" + filename; /* 这里要注意，因为这个文件已经在server里了，所以这里的__dirname是有server的 */
   fs.readFile(req.file.path, function (err, data) {
+    if(err){
+      console.log(err);
+      return;
+    }
     fs.writeFile(des_file, data, function (err) {
       if(err){
         res.json({ resultsCode: 'error', message: '保存本地图片失败' });
+        console.log(err);
+        return;
       } else {
         let time = Common.getNowFormatDate();
         db.pool.getConnection(function(err, connection) {
@@ -104,16 +110,19 @@ exports.saveTreeContImg = function(req, res) {
             console.log(err);
             return;
           }
-          var sql = "UPDATE cont SET filename=?, mTime=? WHERE c_id=?";
-          var array = [filename, time, req.file.c_id];
+          var sql = "UPDATE cont SET filename=?, mTime=? WHERE c_id=? && sort=?";
+          var array = [filename, time, req.body.c_id, req.body.sort];
           connection.query(sql, array, function(err, results) {
             if(err) {
               res.json({ resultsCode: 'error', message: '保存图片信息失败' });
+              console.log(err);
               return;
             }
             fs.unlink(req.file.path, function (err) {  // 删除缓存
               if(err) {
-                res.json({ resultsCode: 'error', message: err });
+                res.json({ resultsCode: 'error', message: '删除缓存失败' });
+                console.log(err);
+                return;
               } else {
                 res.json({ resultsCode: 'success', message: '保存图片成功' });
               }
@@ -127,7 +136,7 @@ exports.saveTreeContImg = function(req, res) {
   });
 };
 
-// 获取某个type的所有图片名称，然后可以通过express静态资源获取
+// 获取image中某个type的所有图片名称，然后可以通过express静态资源获取
 exports.getImgList = function(req, res) {
   var sql = "SELECT * FROM image WHERE type=? ORDER BY cTime";
   db.pool.getConnection(function(err, connection) {

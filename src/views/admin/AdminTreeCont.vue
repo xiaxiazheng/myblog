@@ -49,14 +49,20 @@
 					<div class="uploadtreecontimg">
 						<el-upload
 							:action="uploadUrl"
-							name="image"
+							name="treecont"
 							list-type="picture-card"
+							:data="{ 
+								c_id: contObj.id,
+							  sort: item.sort
+							}"
 							:on-preview="handlePictureCardPreview"
 							:on-success="handleSuccess"
 							:on-error="handleError"
 							:before-remove="handleRemove"
-							:file-list="imgUrllist">
-							<i class="el-icon-plus"></i>
+							:file-list="item.filelist"
+							:limit="1"
+							:class="{'alreadyhasone': item.filename}">
+								<i class="el-icon-plus"></i>
 						</el-upload>
 					</div>
 				</li>
@@ -80,6 +86,7 @@
 
 <script>
 import apiUrl from '@/api/url.js'
+import { baseUrl } from '@/config.js'
 
 export default {
 	props: ['labelObj'],
@@ -89,7 +96,7 @@ export default {
 			isModify: true,
 			// 图片相关
 			imgUrllist: [],
-			uploadUrl: '',
+			uploadUrl: baseUrl + '/treecont_upload',
 			dialogVisible: false,
 			dialogImageName: '', 
 			dialogImageUrl: '',
@@ -113,10 +120,35 @@ export default {
 							id: this.labelObj.id, // 子节点的id
 						};
 				apiUrl.getNodeCont(params).then(function(res) {
-					self.contObj = res.data;
-					console.log(self.contObj);
+					self.contObj = {
+						id: res.data.id,
+						list: []
+					};
+					for(let item of res.data.list) {
+						let imgname = '';
+						if(item.filename) {
+							let houzhui = item.filename.split('.')[1];
+							let qianzhui = item.filename.split('-')[0];
+							let name = qianzhui.substr(0, qianzhui.length - res.data.id.length);
+							imgname = name + '.' + houzhui;
+						}
+						self.contObj.list.push({
+							cont: item.cont,
+							createtime: item.createtime,
+							motifytime: item.motifytime,
+							sort: item.sort,
+							title: item.title,
+							imgname: imgname,
+							filename: item.filename || '',
+							filelist: item.filename ? [{
+								filename: item.filename || '',
+								imgname: imgname || '',
+								url: item.filename ? baseUrl + '/treecont/' + item.filename : ''
+							}] : [],
+						}); 
+					}
 				}).catch(function(res) {
-					self.msgTips(res);
+					console.log(res);
 				});
 			}
 		},
@@ -231,7 +263,6 @@ export default {
     handlePictureCardPreview(file) {
       this.dialogImageUrl = file.url;
       this.dialogImageName = file.imgname;
-      this.dialogCTime = file.cTime;
       this.dialogVisible = true;
     },
     // 上传成功后
@@ -264,18 +295,13 @@ export default {
       }).then(() => {
         let self = this,
             params = {
-              type: this.type,
-              img_id: file.img_id,
               filename: file.filename
             };
-        apiUrl.deleteImg(params).then(function(res) {
-          self.$message({
-            type: 'success',
-            message: '删除成功'
-          });
+        apiUrl.deleteTreeContImg(params).then(function(res) {
+          self.msgTips(res);
           self.init();
         }).catch(function(res) {
-          console.log(res);
+          self.msgTips(res);
         });
       }).catch(() => {
         this.$message({
@@ -296,17 +322,19 @@ export default {
     h1 {
       margin-bottom: 10px;
 		}
-		ul {
+		>div >ul {
+			width: 82.6%; /* 经过计算的，别乱改啊 */
 			li {
+				position: relative;
 				text-align: right;
 				margin-top: 5px;
-				.el-input {
+				.el-input {  /* 标题 */
 					margin-top: 10px;
 				}
-				.el-textarea {
+				.el-textarea {  /* 内容 */
 					margin-top: 10px;
 				}
-				.ctrlbox {
+				.ctrlbox {  /* 控制栏 */
 					position: relative;
 					overflow: hidden;
 					.iconbox {
@@ -317,6 +345,17 @@ export default {
 					.time {
 						float: right;
 						color: #ccc;
+					}
+				}
+				.uploadtreecontimg {  /* 上传图片 */
+					position: absolute;
+					right: -157px;
+					top: 10px;
+					.alreadyhasone {
+						width: 148px;
+						.el-upload--picture-card {
+						  display: none;
+						}
 					}
 				}
 			}

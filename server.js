@@ -93,7 +93,7 @@ app.get('/', function(req, res) {
 	app.get('/deleteimg', function(req, res) { // 删除main和wall的
 		image.deleteImg(req, res);
 	});
-  app.get('treecont_upload', function(req, res) {
+  app.post('/treecont_upload', upload.single('treecont'), function(req, res) { // treecont上传图片
     image.saveTreeContImg(req, res);
 	});
 	app.get('/deletetreecontimg', function(req, res) { // 删除treecont的

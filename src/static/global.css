@@ -19,7 +19,11 @@
   box-sizing: border-box;
   vertical-align: top;
 }
-.rightcont .admincont,
+.rightcont .admincont {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 2.5rem;
+}
 .rightcont .treecont {
   max-width: 740px;
   margin: 0 auto;

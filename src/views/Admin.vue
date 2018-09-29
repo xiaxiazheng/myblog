@@ -28,7 +28,7 @@ export default {
         };
       apiUrl.postLogin(params).then(function(res) {
         if(res.data.resultsCode === "success") {
-					self.$router.replace({ name: 'AdminMain' });
+					// self.$router.replace({ name: 'AdminMain' });
           return;
         } else {
           self.$message({
