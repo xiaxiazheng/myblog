@@ -90,7 +90,7 @@ exports.saveWallImg = function(req, res) {
 exports.saveTreeContImg = function(req, res) {
   // console.log(req.file);  /* 上传的文件信息 */
   let nameArray = req.file.originalname.split(".");
-  let filename = nameArray[0] + req.body.c_id + '-' + req.body.sort + "." + nameArray[1];
+  let filename = nameArray[0] + req.body.c_id + '-' + Common.getRandomNum() + "." + nameArray[1];
   let des_file = __dirname + "/img/treecont/" + filename; /* 这里要注意，因为这个文件已经在server里了，所以这里的__dirname是有server的 */
   fs.readFile(req.file.path, function (err, data) {
     if(err){
