@@ -7,18 +7,26 @@
 				<li v-for="(item, index) in contObj.list" :key="index">
 					<h2>
 						{{item.title}}
-						<span v-if="contObj.list && isPC">
+						<span v-if="contObj.list">
 							修改时间：
 							<span>{{item.motifytime}}</span>
 						</span>
 					</h2>
 					<p v-html="item.cont" v-highlight></p>
 					<div v-if="item.filename" class="imgbox">
-            <img :src="baseImgUrl + item.filename" alt="">
+            <img 
+						  :src="baseImgUrl + item.filename"
+							:alt="getRealImgName(item.filename)"
+							@click="showBigImg(baseImgUrl + item.filename, getRealImgName(item.filename))"
+							title="点击查看大图">
 						<span>{{ getRealImgName(item.filename) }}</span>
 					</div>
 				</li>
 			</ul>
+			<!-- 图片看大图 -->
+			<el-dialog :visible.sync="dialogVisible" :title="dialogImageName">
+				<img width="100%" :src="dialogImageUrl" :alt="dialogImageName" :title="dialogImageName">
+			</el-dialog>
 		</div>
 		<div v-else>
 			<h1>Welcome !</h1>
@@ -35,7 +43,10 @@ export default {
   data() {
     return {
 			contObj: [],
-			baseImgUrl: baseUrl + '/treecont/'
+			baseImgUrl: baseUrl + '/treecont/',
+			dialogVisible: false,
+			dialogImageName: '',
+			dialogImageUrl: '',
     }
 	},
 	mounted() {
@@ -65,7 +76,6 @@ export default {
 						self.contObj.list[i].cont = self.contObj.list[i].cont.replace(/  /g, "&nbsp;&nbsp;"); // 把空格转成实体字符，以防多空格被合并
 						self.contObj.list[i].cont = self.contObj.list[i].cont.replace(/\n|\r\n/g, "<br/>"); // 把换行转成br标签
 					}
-					console.log(self.contObj)
 				}).catch(function(res) {
 					self.$message({
 						type: 'error',
@@ -74,13 +84,19 @@ export default {
 				});
 			}
 		},
-		/* */
+		/* 获取文件原本的名称，没有id没有后缀那种 */
 		getRealImgName(filename) {
 			if(filename) {
 				let qianzhui = filename.split('-')[0];
 				return qianzhui.substr(0, qianzhui.length - this.contObj.id.length);
 			}
-		}
+		},
+		/* 点击查看大图 */
+		showBigImg(imgurl, imgname) {
+			this.dialogImageUrl = imgurl;
+			this.dialogImageName = imgname;
+			this.dialogVisible = true;
+		},
 	}
 }
 </script>
@@ -104,7 +120,7 @@ export default {
 				right: 0;
 				bottom: .3rem;
 				font-size: .8rem;
-				color: #999;
+				color: #ccc;
 			}
 		}
 		ul {
@@ -120,6 +136,7 @@ export default {
 						display: inherit;
 						height: calc(100% - 14px);
 						margin: 0 auto;
+						cursor: pointer;
 					}
 					span {
 						font-size: 12px;

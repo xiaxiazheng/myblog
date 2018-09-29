@@ -75,7 +75,7 @@
 			</div>
 			<!-- 图片看大图 -->
 			<el-dialog :visible.sync="dialogVisible" :title="dialogImageName">
-				<img width="100%" :src="dialogImageUrl" alt="">
+				<img width="100%" :src="dialogImageUrl" :alt="dialogImageName" :title="dialogImageName">
 			</el-dialog>
 		</div>
 		<div v-else>
