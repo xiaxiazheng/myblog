@@ -29,7 +29,7 @@
 			</el-dialog>
 		</div>
 		<div v-else>
-			<h1>Welcome !</h1>
+			<TreeMain type="home"></TreeMain>
 		</div>
   </div>
 </template>
@@ -37,6 +37,7 @@
 <script>
 import apiUrl from '@/api/url.js'
 import { baseUrl } from '@/config.js'
+import TreeMain from '@/components/TreeMain'
 
 export default {
 	props: ['labelObj', 'isPC'],
@@ -48,6 +49,9 @@ export default {
 			dialogImageName: '',
 			dialogImageUrl: '',
     }
+	},
+	components: {
+		TreeMain
 	},
 	mounted() {
 		this.$nextTick(function() {
@@ -102,7 +106,7 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="less">
+<style lang="less" scoped>
   .treecont {
 		padding: 10px;
 		text-align: left;

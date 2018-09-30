@@ -61,6 +61,7 @@
 				v-model="isEdit"
 				title="是否编辑">
 			</el-switch>
+			<!-- 切换以下两个 -->
       <AdminTreeCont v-if="isEdit" :label-obj="clickObj"></AdminTreeCont>
 			<TreeCont v-if="!isEdit" :label-obj="clickObj"></TreeCont>
 		</div>

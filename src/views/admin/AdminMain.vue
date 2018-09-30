@@ -1,16 +1,16 @@
 <template>
   <div class="adminmain">
-    <uploadPhotoWall type="main"></uploadPhotoWall>
+    <UploadPhotoWall type="main"></UploadPhotoWall>
   </div>
 </template>
 
 <script>
-import uploadPhotoWall from '@/components/uploadPhotoWall'
+import UploadPhotoWall from '@/components/UploadPhotoWall'
 
 export default {
   name: 'AdminMain',
   components: {
-    uploadPhotoWall
+    UploadPhotoWall
   }
 }
 </script>

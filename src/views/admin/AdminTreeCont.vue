@@ -79,7 +79,7 @@
 			</el-dialog>
 		</div>
 		<div v-else>
-			<h2>Welcome !</h2>
+			<TreeMain type="admin"></TreeMain>
 		</div>
   </div>
 </template>
@@ -87,6 +87,7 @@
 <script>
 import apiUrl from '@/api/url.js'
 import { baseUrl } from '@/config.js'
+import TreeMain from '@/components/TreeMain'
 
 export default {
 	props: ['labelObj'],
@@ -101,6 +102,9 @@ export default {
 			dialogImageName: '', 
 			dialogImageUrl: '',
     }
+	},
+	components: {
+		TreeMain
 	},
 	mounted() {
 		this.$nextTick(function() {

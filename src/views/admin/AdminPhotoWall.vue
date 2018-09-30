@@ -1,16 +1,16 @@
 <template>
   <div class="adminwait">
-    <uploadPhotoWall type="wall"></uploadPhotoWall>
+    <UploadPhotoWall type="wall"></UploadPhotoWall>
   </div>
 </template>
 
 <script>
-import uploadPhotoWall from '@/components/uploadPhotoWall'
+import UploadPhotoWall from '@/components/UploadPhotoWall'
 
 export default {
   name: 'AdminWait',
   components: {
-    uploadPhotoWall
+    UploadPhotoWall
   }
 }
 </script>
