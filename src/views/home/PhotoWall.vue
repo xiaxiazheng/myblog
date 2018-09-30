@@ -1,6 +1,6 @@
 <template>
   <div class="photowall">
-    <div>
+    <!-- <div>
       <el-upload
         action="#"
         name="image"
@@ -13,24 +13,42 @@
         <img width="100%" :src="dialogImageUrl" alt="">
         <span>{{ dialogCTime }}</span>
       </el-dialog>
+    </div> -->
+    <h1>瀑布流改造升级中</h1>
+    <div class="masonry">
+      <div class="column">
+        <div class="item">
+          <div class="item__content"> </div>
+        </div> <!-- more items -->
+      </div>
+      <div class="column">
+        <div class="item">
+          <div class="item__content"> </div>
+        </div> <!-- more items -->
+      </div>
+      <div class="column">
+        <div class="item">
+          <div class="item__content"> </div>
+        </div> <!-- more items -->
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import apiUrl from '@/api/url.js'
-import { baseUrl } from '@/config.js'
+import apiUrl from "@/api/url.js";
+import { baseUrl } from "@/config.js";
 
 export default {
-  name: 'PhotoWall',
+  name: "PhotoWall",
   data() {
     return {
-      dialogImageName: '',
-      dialogImageUrl: '',
-      dialogCTime: '',
+      dialogImageName: "",
+      dialogImageUrl: "",
+      dialogCTime: "",
       dialogVisible: false,
       imgUrllist: []
-    }
+    };
   },
   mounted() {
     this.$nextTick(function() {
@@ -40,48 +58,56 @@ export default {
   methods: {
     init() {
       let self = this,
-          params = {
-            type: 'wall'
-          };
-      apiUrl.getImgList(params).then(function(res) {
-        if(res.data.length !== 0) {
-          for(let item of res.data) {
-            self.imgUrllist.push({
-              img_id: item.img_id,
-              imgname: item.imgname,
-              filename: item.filename,
-              cTime: item.cTime,
-              url: baseUrl + '/wall/' + item.filename
-            });
+        params = {
+          type: "wall"
+        };
+      apiUrl
+        .getImgList(params)
+        .then(function(res) {
+          if (res.data.length !== 0) {
+            for (let item of res.data) {
+              self.imgUrllist.push({
+                img_id: item.img_id,
+                imgname: item.imgname,
+                filename: item.filename,
+                cTime: item.cTime,
+                url: baseUrl + "/wall/" + item.filename
+              });
+            }
           }
-        }
-      }).catch(function(res) {
-        console.log(res);
-      });
+        })
+        .catch(function(res) {
+          console.log(res);
+        });
     },
     handlePictureCardPreview(file) {
       this.dialogImageUrl = file.url;
       this.dialogImageName = file.imgname;
       this.dialogCTime = file.cTime;
       this.dialogVisible = true;
-    },
+    }
   }
-}
+};
 </script>
 
 <style lang="less">
-@import '../../static/global.less';
+@import "../../static/global.less";
 
-  .photowall {
-    height: 100%;
-    .el-upload-list__item.is-success .el-upload-list__item-status-label {  // 去掉右上角的绿勾勾
-      display: none !important;
-    }
-    .el-upload-list--picture-card .el-upload-list__item-actions .el-upload-list__item-delete {  // 去掉删除图片的字体图标
-      display: none !important;
-    }
-    .el-upload--picture-card {  // 去掉上传图片的框
-      display: none !important;
-    }
+.photowall {
+  height: 100%;
+  .el-upload-list__item.is-success .el-upload-list__item-status-label {
+    // 去掉右上角的绿勾勾
+    display: none !important;
   }
+  .el-upload-list--picture-card
+    .el-upload-list__item-actions
+    .el-upload-list__item-delete {
+    // 去掉删除图片的字体图标
+    display: none !important;
+  }
+  .el-upload--picture-card {
+    // 去掉上传图片的框
+    display: none !important;
+  }
+}
 </style>
