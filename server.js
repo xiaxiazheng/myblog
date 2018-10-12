@@ -47,6 +47,9 @@ app.get('/', function(req, res) {
 	app.get('/tree', function(req, res) {
     tree.getTree(req, res);
 	});
+	app.get('/getchildname', function(req, res) {
+		tree.getChildName(req, res);
+	});
 	app.get('/addtreenode', function(req, res) {
 		tree.addTreeNode(req, res);
 	});

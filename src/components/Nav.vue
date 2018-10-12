@@ -8,11 +8,29 @@
         </span>
       </div>
       <div class="rightside">
-        <el-input
+        <!-- <el-input
           placeholder="暂时没想好怎么做"
           prefix-icon="el-icon-search"
           v-model="searchkeyword">
-        </el-input>
+        </el-input> -->
+        <el-autocomplete
+          class="searchBox"
+          popper-class="searchBoxPopper"
+          v-model="searchkeyword"
+          :fetch-suggestions="querySearch"
+          placeholder="搜索树的节点"
+          :trigger-on-focus="false"
+          @select="handleSelect"
+        >
+          <i
+            class="el-icon-edit el-input__icon"
+            slot="suffix">
+          </i>
+          <template slot-scope="{ item }" :title="item.label + '\n' + item.flabel">
+            <div class="label">{{ item.label }}</div>
+            <span class="flabel">{{ item.flabel }}</span>
+          </template>
+        </el-autocomplete>
         <span class="tabItem" :class="{'active': activeTab === 'Tree'}" @click="clickTabs('Tree')">知识树</span>
         <span class="tabItem" :class="{'active': activeTab === 'PhotoWall'}" @click="clickTabs('PhotoWall')">图片墙</span>
         <a href="https://github.com/xiaxiazheng/myblog">
@@ -41,11 +59,13 @@
 </template>
 
 <script>
+import apiUrl from '@/api/url.js'
 
 export default {
   name: 'Nav',
   data() {
     return {
+      tree: [],
       activeTab: '',
       searchkeyword: '',
     }
@@ -58,17 +78,59 @@ export default {
   },
   methods: {
     init() {
-      
+      var self = this,
+          params = {
+            type: 'home'
+          };
+      apiUrl.getTree(params).then(function(res) {
+        self.tree = [];
+        for(let item of res.data) {
+          for(let jtem of item.children) {
+            for(let ktem of jtem.children) {
+              self.tree.push({
+                id: ktem.id,
+                flabel: item.label + ' -> ' + jtem.label,
+                label: ktem.label
+              });
+            }
+          }
+        }
+      }).catch(function(res) {
+        self.$message({
+          type: 'error',
+          message: '初始化树失败'
+        });
+      });
     },
+
     clickTabs(tabName) {
       this.$router.push({ name: tabName });
       this.activeTab = tabName;
+    },
+
+    querySearch(queryString, cb) {
+      var tree = this.tree;
+      var results = queryString ? tree.filter(this.createFilter(queryString)) : tree;
+      
+      cb(results); // 调用 callback 返回建议列表的数据
+    },
+    createFilter(queryString) {
+      return (item) => {
+        return (item.label.toLowerCase().indexOf(queryString.toLowerCase()) !== -1 || item.flabel.toLowerCase().indexOf(queryString.toLowerCase()) !== -1);
+      };
+    },
+    handleSelect(item) {
+      this.$router.replace({
+        name: "Tree",
+        query: {
+          id: btoa(encodeURIComponent(item.id))
+        }
+      })
     }
   }
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less">
   .nav {
     height: 3.6rem;
@@ -108,13 +170,25 @@ export default {
           text-decoration: none;
           color: black;
         }
-        .el-input {
-          width: auto;
-          .el-input__inner {
-            height: 35px;
-            border-radius: 25px;
-          }
+        .searchBox {
+          display: inline-block;
+          vertical-align: middle;
         }
+      }
+    }
+  }
+  // 这个搜索的弹出框在比较全局的地方
+  .searchBoxPopper {
+    li {
+      line-height: normal;
+      padding: 7px;
+      .label {
+        text-overflow: ellipsis;
+        overflow: hidden;
+      }
+      .flabel {
+        font-size: 12px;
+        color: #b4b4b4;
       }
     }
   }

@@ -10,6 +10,9 @@ export default {
   getTree(params) {
     return axios.get(baseUrl + '/tree', {params});
   },
+  getChildName(params) {
+    return axios.get(baseUrl + '/getchildname', {params});
+  },
   addTreeNode(params) {
     return axios.get(baseUrl + '/addtreenode', {params});
   },

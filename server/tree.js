@@ -83,6 +83,27 @@ exports.getTree = function(req, res) {
     });
   });
 };
+// 查三级节点名
+exports.getChildName = function(req, res) {
+  db.pool.getConnection(function(err, connection) {
+    if(err) {
+      res.json({ resultsCode:'error', message:'连接数据库失败' });
+      console.log(err);
+      return;
+    }
+    var sql = "SELECT c_label FROM tree WHERE c_id=?";
+    var array = [req.query.id];
+    connection.query(sql, array, function(err, result) {
+      if(err) {
+        res.json({ resultsCode:'error', message:'查找失败，操作tree失败' });
+        return;
+      }
+      res.json(result);
+
+      connection.release();
+    });
+  });
+}
 
 // 增
 exports.addTreeNode = function(req, res) {

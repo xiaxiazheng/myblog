@@ -6,13 +6,15 @@
         <el-tree
           :data="tree"
           :props="defaultProps"
-          @node-click="handleClick"
           node-key="id"
+          :default-expanded-keys="defaultExpandedKeys"
+          :highlight-current="true"
+          @node-click="handleClick"
           accordion>
         </el-tree>
       </div>
       <div class="rightcont">
-        <TreeCont :label-obj="clickObj"></TreeCont>
+        <TreeCont></TreeCont>
       </div>
     </div>
     <!-- 移动端 -->
@@ -35,7 +37,7 @@
         </el-tree>
       </div>
       <div class="rightMobile">
-        <TreeCont :label-obj="clickObj" :isPC="isPC"></TreeCont>
+        <TreeCont :isPC="isPC"></TreeCont>
       </div>
     </div>
   </div>
@@ -53,14 +55,14 @@ export default {
   data() {
     return {
       tree: [],
-      clickObj: '',
       defaultProps: {
 				children: 'children',
 				label: 'label'
       },
+      defaultExpandedKeys: [],
       isPC: false,
       showTree: false,
-      title: '虾虾郑的个人空间'
+      title: '虾虾郑的个人空间',
     }
   },
   mounted() {
@@ -68,10 +70,19 @@ export default {
       this.init();
     });
   },
+  watch: {
+    "$route"() {
+      this.init();
+    }
+  },
   methods: {
     init() {
       if(window.screen.width > 600) {
         this.isPC = true;
+      }
+      if(this.$route.query.id) {
+        this.defaultExpandedKeys = [];
+        this.defaultExpandedKeys.push(parseInt(atob(this.$route.query.id)));
       }
       var self = this,
           params = {
@@ -89,7 +100,13 @@ export default {
     handleClick(nodeObj, node, c) {
 			let isLeaf = node.isLeaf;
 			if(isLeaf) {
-        this.clickObj = node.data;
+        this.$router.push({ 
+          query: {
+            id: btoa(encodeURIComponent(node.data.id))
+          } 
+        });
+
+        // 移动端
         this.showTree = false;
         this.title = node.data.label;
       }

@@ -1,8 +1,7 @@
 <template>
   <div class="treecont">
-		<div v-if="labelObj.label">
-      <h1>{{labelObj.label}}</h1>
-			<!-- <span v-if="labelObj.id">{{labelObj.id}}</span> -->
+		<div v-if="$route.query.id !== ''">
+      <h1>{{title}}</h1>
 			<ul>
 				<li v-for="(item, index) in contObj.list" :key="index">
 					<h2>
@@ -40,7 +39,7 @@ import { baseUrl } from '@/config.js'
 import TreeMain from '@/components/TreeMain'
 
 export default {
-	props: ['labelObj', 'isPC'],
+	props: ['isPC'],
   data() {
     return {
 			contObj: [],
@@ -48,6 +47,7 @@ export default {
 			dialogVisible: false,
 			dialogImageName: '',
 			dialogImageUrl: '',
+			title: '',
     }
 	},
 	components: {
@@ -59,17 +59,25 @@ export default {
 		});
 	},
 	watch: {
-    labelObj() {
+		"$route"() {
 			this.init();
 		}
 	},
 	methods: {
 		init() {
-			if(this.labelObj) {
+			if(this.$route.query.id) {
 				var self = this,
 						params = {
-							id: this.labelObj.id, // 子节点的id
+							id: decodeURIComponent(atob(this.$route.query.id)), // 子节点的id
 						};
+				apiUrl.getChildName(params).then(function(res) {
+					self.title = res.data[0].c_label;
+				}).catch(function(res) {
+					self.$message({
+						type: 'error',
+						message: '初始化出错'
+					});
+				});
 				apiUrl.getNodeCont(params).then(function(res) {
 					self.contObj = res.data;
 					for(let i in self.contObj.list) {
