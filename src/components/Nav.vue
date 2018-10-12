@@ -18,7 +18,7 @@
           :trigger-on-focus="false"
           @select="handleSelect">
           <i
-            class="el-icon-edit el-input__icon"
+            class="el-icon-search el-input__icon"
             slot="suffix">
           </i>
           <template slot-scope="{ item }" :title="item.label + '\n' + item.flabel">
@@ -31,10 +31,11 @@
         <span class="tabItem" :class="{'active': activeTab === 'PhotoWall'}" @click="clickTabs('PhotoWall')">图片墙</span>
         <a href="https://github.com/xiaxiazheng/myblog">
           GitHub
-          <i class="el-icon-loading"></i>
+          <i class="el-icon-star-off"></i>
         </a>
       </div>
     </div>
+    
     <!-- 控制台版 -->
     <div v-if="type === 'admin'">
       <div class="leftside">
@@ -53,7 +54,7 @@
           :trigger-on-focus="false"
           @select="handleSelect">
           <i
-            class="el-icon-edit el-input__icon"
+            class="el-icon-search el-input__icon"
             slot="suffix">
           </i>
           <template slot-scope="{ item }" :title="item.label + '\n' + item.flabel">
@@ -66,7 +67,7 @@
         <span class="tabItem" :class="{'active': activeTab === 'AdminPhotoWall'}" @click="clickTabs('AdminPhotoWall')">图片墙</span>
         <a href="https://github.com/xiaxiazheng/myblog">
           GitHub
-          <i class="el-icon-loading"></i>
+          <i class="el-icon-star-off"></i>
         </a>
       </div>
     </div>

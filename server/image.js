@@ -8,8 +8,7 @@ var fs = require('fs');
 exports.saveMainImg = function(req, res) {
   // console.log(req.file);  /* 上传的文件信息 */
   let img_id = Common.getRandomNum();
-  let nameArray = req.file.originalname.split(".");
-  let filename = nameArray[0] + img_id + "." + nameArray[1];
+  let filename = Common.getImageName(req.file.originname, img_id);
   let des_file = __dirname + "/img/main/" + filename; /* 这里要注意，因为这个文件已经在server里了，所以这里的__dirname是有server的 */
   fs.readFile(req.file.path, function (err, data) {
     fs.writeFile(des_file, data, function (err) {
@@ -49,8 +48,7 @@ exports.saveMainImg = function(req, res) {
 exports.saveWallImg = function(req, res) {
   // console.log(req.file);  /* 上传的文件信息 */
   let img_id = Common.getRandomNum();
-  let nameArray = req.file.originalname.split(".");
-  let filename = nameArray[0] + img_id + "." + nameArray[1];
+  let filename = Common.getImageName(req.file.originname, img_id);
   let des_file = __dirname + "/img/wall/" + filename; /* 这里要注意，因为这个文件已经在server里了，所以这里的__dirname是有server的 */
   fs.readFile(req.file.path, function (err, data) {
     fs.writeFile(des_file, data, function (err) {
@@ -89,8 +87,7 @@ exports.saveWallImg = function(req, res) {
 // 树详细内容的，treeCont
 exports.saveTreeContImg = function(req, res) {
   // console.log(req.file);  /* 上传的文件信息 */
-  let nameArray = req.file.originalname.split(".");
-  let filename = nameArray[0] + req.body.c_id + '-' + Common.getRandomNum() + "." + nameArray[1];
+  let filename = Common.getImageName(req.file.originname, req.body.c_id + '-' + Common.getRandomNum());
   let des_file = __dirname + "/img/treecont/" + filename; /* 这里要注意，因为这个文件已经在server里了，所以这里的__dirname是有server的 */
   fs.readFile(req.file.path, function (err, data) {
     if(err){

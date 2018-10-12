@@ -32,3 +32,22 @@ exports.getNowFormatDate = function() {
 exports.getRandomNum = function() {
   return Math.round(Math.random() * 2147483647);
 };
+
+// 获取处理过的图片名
+exports.getImageName = function(name, id) {
+  let nameArray = name.split(".");
+
+  if(nameArray.length === 2) { // 文件名中没有.
+    return nameArray[0] + id + "." + nameArray[1];
+  } else {
+    let filerealname = '';
+    for(let i = 0; i < nameArray.length - 1; i++) {
+      filerealname += nameArray[i];
+      if(i === nameArray.length - 2) {
+        filerealname + id;
+      }
+      filerealname += '.';
+    }
+    return filerealname + nameArray[nameArray.length - 1];
+  }
+}

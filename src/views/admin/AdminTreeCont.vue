@@ -138,10 +138,13 @@ export default {
 					for(let item of res.data.list) {
 						let imgname = '';
 						if(item.filename) {
-							let houzhui = item.filename.split('.')[1];
-							let qianzhui = item.filename.split('-')[0];
-							let name = qianzhui.substr(0, qianzhui.length - res.data.id.length);
-							imgname = name + '.' + houzhui;
+							list1 = item.filename.split('.');
+							let houzhui1 = list[list.length - 1]; // 文件类型
+							list2 = item.filename.split('-');
+							let houzhui2 = list[list.length - 1]; // "随机数.文件类型"
+							let qianzhui2 = item.filename.substr(0, item.filename.length - houzhui2.length - 1); // 多-1是要剪掉'-'
+							let qianzhui1 = qianzhui2.substr(0, qianzhui2.length - res.data.id.length);
+							imgname = qianzhui1 + '.' + houzhui1;
 						}
 						self.contObj.list.push({
 							cont: item.cont,
