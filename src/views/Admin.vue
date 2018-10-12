@@ -28,14 +28,13 @@ export default {
         };
       apiUrl.postLogin(params).then(function(res) {
         if(res.data.resultsCode === "success") {
-					// self.$router.replace({ name: 'AdminMain' });
           return;
         } else {
           self.$message({
             type: 'error',
             message: "请重新登陆"
           });
-          this.$router.replace({ path: '/login' });
+          self.$router.push('/login');
         }
       }).catch(function(res) {
         self.$message({
@@ -48,8 +47,8 @@ export default {
         type: 'warning',
         message: "请先登陆"
       });
-      this.$router.replace({ path: '/login' });
-		}
+      this.$router.push('/login');
+    }
 	},
 	mounted() {
 		this.$nextTick(function() {

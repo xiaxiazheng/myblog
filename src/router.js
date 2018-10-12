@@ -1,7 +1,7 @@
 export default new VueRouter({
   routes: [
 		{
-			path: '/',
+			path: '',
 			name: 'Home',
 			component: resolve => require(['@/views/Home'], resolve),
 			children: [
@@ -25,11 +25,11 @@ export default new VueRouter({
 		{
 			path: '/login',
 			name: 'Login',
-			component: resolve => require(['@/components/Login'], resolve)
+			component: resolve => require(['@/components/Login'], resolve),
 		},
 		{
 			path: '/admin',
-			name: 'admin',
+			name: 'Admin',
 			component: resolve => require(['@/views/Admin'], resolve),
 			children: [
 				{
@@ -48,6 +48,6 @@ export default new VueRouter({
 					component: resolve => require(['@/views/admin/AdminPhotoWall'], resolve),
 				}
 			]
-		}
+		},
   ]
 });

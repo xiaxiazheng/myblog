@@ -18,7 +18,6 @@
 
 <script>
 import apiUrl from '@/api/url.js'
-import Admin from '@/views/Admin'
 
 export default {
 	name: 'Login',
@@ -29,9 +28,6 @@ export default {
       showPassword: false,
 		}
 	},
-  components: {
-		Admin
-  },
   created() {
     if(sessionStorage.getItem("xia_username") && sessionStorage.getItem("xia_password")) {
       var self = this,

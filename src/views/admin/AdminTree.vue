@@ -145,29 +145,6 @@ export default {
 			shuttleChildLabel: '',
 		};
 	},
-	// 创建组件之前检查是否登陆
-	beforeCreate() {
-		if(sessionStorage.getItem("xia_username") && sessionStorage.getItem("xia_password")) {
-      var self = this,
-        params = {
-          username: sessionStorage.getItem("xia_username"),
-					userpword: window.atob(sessionStorage.getItem("xia_password"))
-        };
-      apiUrl.postLogin(params).then(function(res) {
-        if(res.data.resultsCode === "success") {
-          self.showAdmin = true;
-          return;
-        } else {
-          self.msgTips(res);
-          self.$router.replace({ path: 'login' });
-        }
-      }).catch(function(res) {
-        self.msgTips(res);
-      });
-    } else {
-			this.$router.replace({ path: 'login' });
-		}
-	},
 	mounted() {
 		this.$nextTick(function() {
 			this.init();
