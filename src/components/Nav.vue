@@ -8,11 +8,7 @@
         </span>
       </div>
       <div class="rightside">
-        <!-- <el-input
-          placeholder="暂时没想好怎么做"
-          prefix-icon="el-icon-search"
-          v-model="searchkeyword">
-        </el-input> -->
+        <!-- 搜索框 -->
         <el-autocomplete
           class="searchBox"
           popper-class="searchBoxPopper"
@@ -20,8 +16,7 @@
           :fetch-suggestions="querySearch"
           placeholder="搜索树的节点"
           :trigger-on-focus="false"
-          @select="handleSelect"
-        >
+          @select="handleSelect">
           <i
             class="el-icon-edit el-input__icon"
             slot="suffix">
@@ -31,6 +26,7 @@
             <span class="flabel">{{ item.flabel }}</span>
           </template>
         </el-autocomplete>
+        <!-- 右边的 tabs 们 -->
         <span class="tabItem" :class="{'active': activeTab === 'Tree'}" @click="clickTabs('Tree')">知识树</span>
         <span class="tabItem" :class="{'active': activeTab === 'PhotoWall'}" @click="clickTabs('PhotoWall')">图片墙</span>
         <a href="https://github.com/xiaxiazheng/myblog">
@@ -47,6 +43,25 @@
         </span>
       </div>
       <div class="rightside">
+        <!-- 搜索框 -->
+        <el-autocomplete
+          class="searchBox"
+          popper-class="searchBoxPopper"
+          v-model="searchkeyword"
+          :fetch-suggestions="querySearch"
+          placeholder="搜索树的节点"
+          :trigger-on-focus="false"
+          @select="handleSelect">
+          <i
+            class="el-icon-edit el-input__icon"
+            slot="suffix">
+          </i>
+          <template slot-scope="{ item }" :title="item.label + '\n' + item.flabel">
+            <div class="label">{{ item.label }}</div>
+            <span class="flabel">{{ item.flabel }}</span>
+          </template>
+        </el-autocomplete>
+        <!-- 右边的 tabs 们 -->
         <span class="tabItem" :class="{'active': activeTab === 'AdminTree'}" @click="clickTabs('AdminTree')">知识树</span>
         <span class="tabItem" :class="{'active': activeTab === 'AdminPhotoWall'}" @click="clickTabs('AdminPhotoWall')">图片墙</span>
         <a href="https://github.com/xiaxiazheng/myblog">
@@ -108,24 +123,37 @@ export default {
       this.activeTab = tabName;
     },
 
+    // 处理是否搜索
     querySearch(queryString, cb) {
       var tree = this.tree;
       var results = queryString ? tree.filter(this.createFilter(queryString)) : tree;
       
       cb(results); // 调用 callback 返回建议列表的数据
     },
+    // 处理搜索的筛选
     createFilter(queryString) {
       return (item) => {
         return (item.label.toLowerCase().indexOf(queryString.toLowerCase()) !== -1 || item.flabel.toLowerCase().indexOf(queryString.toLowerCase()) !== -1);
       };
     },
+    // 点击搜索出来的待选
     handleSelect(item) {
-      this.$router.replace({
-        name: "Tree",
-        query: {
-          id: btoa(encodeURIComponent(item.id))
-        }
-      })
+      if(this.type === 'home') {
+        this.$router.replace({
+          name: "Tree",
+          query: {
+            id: btoa(encodeURIComponent(item.id))
+          }
+        })
+      }
+      if(this.type === 'admin') {
+        this.$router.replace({
+          name: "AdminTree",
+          query: {
+            id: btoa(encodeURIComponent(item.id))
+          }
+        })
+      }
     }
   }
 }

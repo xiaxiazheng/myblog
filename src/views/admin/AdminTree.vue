@@ -62,8 +62,8 @@
 				title="是否编辑">
 			</el-switch>
 			<!-- 切换以下两个 -->
-      <AdminTreeCont v-if="isEdit" :label-obj="clickObj"></AdminTreeCont>
-			<TreeCont v-if="!isEdit" :label-obj="clickObj"></TreeCont>
+      <AdminTreeCont v-if="isEdit"></AdminTreeCont>
+			<TreeCont v-if="!isEdit"></TreeCont>
 		</div>
 		<!-- 修改节点名称的dialog -->
 		<el-dialog
@@ -119,8 +119,8 @@ export default {
   data() {
 		return {
 			tree: [],
+			allNodelist: [], // 整棵树的节点和状态
 			isEdit: false,  // 切换编辑版和展示版
-			clickObj: '',  // 传给子组件的数据，包括子节点的id和label
 			defaultProps: {
 				children: 'children',
 				label: 'label'
@@ -145,6 +145,7 @@ export default {
 			shuttleChildLabel: '',
 		};
 	},
+	// 创建组件之前检查是否登陆
 	beforeCreate() {
 		if(sessionStorage.getItem("xia_username") && sessionStorage.getItem("xia_password")) {
       var self = this,
@@ -172,8 +173,17 @@ export default {
 			this.init();
 		});
 	},
+	watch: {
+    "$route"() {
+			this.saveFathExpend(null);
+      this.init();
+    }
+  },
 	methods: {
 		init() {
+			if(this.$route.query.id) {
+        this.expandedList.push(parseInt(atob(this.$route.query.id)));
+      }
 			var self = this,
           params = {
 						type: 'admin'
@@ -209,7 +219,12 @@ export default {
 		// 点击节点，三个参数分别为传递给 data 属性的数组中该节点所对应的对象、节点对应的 Node、节点组件本身。
 		handleClick(obj, node, component) {
 			if(node.level === 3) { // 若是子节点则右边显示具体信息
-				this.clickObj = node.data;
+				this.$router.push({ 
+          query: {
+            id: btoa(encodeURIComponent(node.data.id))
+          } 
+				});
+				this.saveFathExpend(node);
 			}
 		},
 
@@ -545,16 +560,20 @@ export default {
 
 		// 保存当前一二级节点们的展开状态
 		saveFathExpend(node) {
-			let list = [];
-			if(node.level === 1) {  // 一级节点
-				list = node.parent.childNodes;
-			} else if(node.level === 2) {  // 二级节点
-				list = node.parent.parent.childNodes;
-			} else {  // 三级节点
-				list = node.parent.parent.parent.childNodes;
+			if(node) {
+				let list = [];
+				if(node.level === 1) {  // 一级节点
+					list = node.parent.childNodes;
+				} else if(node.level === 2) {  // 二级节点
+					list = node.parent.parent.childNodes;
+				} else {  // 三级节点
+					list = node.parent.parent.parent.childNodes;
+				}
+				this.allNodelist = list;
 			}
+			
 			this.expandedList = [];
-			for(let item of list) {
+			for(let item of this.allNodelist) {
 				if(item.expanded) {
 					this.expandedList.push(item.data.id);
 				}

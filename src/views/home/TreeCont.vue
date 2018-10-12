@@ -42,12 +42,12 @@ export default {
 	props: ['isPC'],
   data() {
     return {
+			title: '',
 			contObj: [],
 			baseImgUrl: baseUrl + '/treecont/',
 			dialogVisible: false,
 			dialogImageName: '',
 			dialogImageUrl: '',
-			title: '',
     }
 	},
 	components: {
