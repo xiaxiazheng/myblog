@@ -71,7 +71,7 @@ export default {
     });
   },
   watch: {
-    "$route"() {
+    "$route"() { // 路由变化要监听
       this.init();
     }
   },
@@ -80,8 +80,8 @@ export default {
       if(window.screen.width > 600) {
         this.isPC = true;
       }
-      if(this.$route.query.id) {
-        this.defaultExpandedKeys = [];
+      if(this.$route.query.id) {  // 如果有id就做节点展开，起码刷新的时候要把当前的节点存起来展开
+        this.defaultExpandedKeys = []; // 前台展示的话直接清空
         this.defaultExpandedKeys.push(parseInt(atob(this.$route.query.id)));
       }
       var self = this,
@@ -100,7 +100,7 @@ export default {
     handleClick(nodeObj, node, c) {
 			let isLeaf = node.isLeaf;
 			if(isLeaf) {
-        this.$router.push({ 
+        this.$router.push({ // 点击节点就改路由
           query: {
             id: btoa(encodeURIComponent(node.data.id))
           } 

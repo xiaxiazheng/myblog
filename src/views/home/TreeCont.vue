@@ -66,7 +66,7 @@ export default {
 				this.$router.push({ query: {} });
 			}
 		},
-		"$route"() {
+		"$route"() {  // 路由发生变化页面要刷新
 			this.init();
 		}
 	},
@@ -78,8 +78,7 @@ export default {
 						params = {
 							id: id, // 子节点的id
 						};
-				this.getChildName(id);
-				// 获取当前节点名称
+				this.getChildName(id);  // 获取当前节点名称
 				apiUrl.getChildName(params).then(function(res) {
 					self.title = res.data[0].c_label;
 				}).catch(function(res) {

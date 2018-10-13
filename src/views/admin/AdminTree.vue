@@ -154,14 +154,14 @@ export default {
 	},
 	watch: {
     "$route"() {
-			this.saveFathExpend(null);
+			this.saveFathExpend(null); // 这里要在刷新前保存借点
       this.init();
     }
   },
 	methods: {
 		init() {
 			if(this.$route.query.id) {
-        this.expandedList.push(parseInt(atob(this.$route.query.id)));
+        this.expandedList.push(parseInt(atob(this.$route.query.id))); // 如果有id就做节点展开，起码刷新的时候要把当前的节点存起来展开
       }
 			var self = this,
           params = {
@@ -294,7 +294,7 @@ export default {
 										self.msgTips(res);
 										self.saveFathExpend(node);
 										self.init();
-										self.propsname = '';
+										self.propsname = ''; // 改变传过去的值
 									}).catch(function(res) {
 										self.msgTips(res);
 									});
@@ -475,7 +475,7 @@ export default {
 				self.showEditDialog = false;
 				self.msgTips(res);
 				self.init();
-				self.propsname = self.motifyNode.newNodeName;
+				self.propsname = self.motifyNode.newNodeName;  // 保证修改的值能直接传给子组件，因为改了值路由没变，子组件不会刷新
 				self.motifyNode.newNodeName = '';
 			}).catch(function(res) {
 				self.msgTips(res);

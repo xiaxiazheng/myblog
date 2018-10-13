@@ -113,14 +113,14 @@ export default {
 		});
 	},
 	watch: {
-		propsname() {
+		propsname() { // 父组件用传过来的名称来表示该三级节点的状态，如果该节点被删除则要清路由
 			if(this.propsname !== '') {
 				this.title = this.propsname;
 			} else {
 				this.$router.push({ query: {} });
 			}
 		},
-		"$route"() {
+		"$route"() { // 路由发生变化页面要刷新
 			this.init();
 		}
 	},
