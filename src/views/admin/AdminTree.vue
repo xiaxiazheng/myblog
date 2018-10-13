@@ -204,8 +204,8 @@ export default {
           } 
 				});
 				this.propsname = node.data.label;
-				this.saveFathExpend(node);
 			}
+			this.saveFathExpend(node);
 		},
 
 		// 修改节点

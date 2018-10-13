@@ -1,6 +1,6 @@
 <template>
   <div class="treecont">
-		<div v-if="$route.query.id !== '' && propsname !== ''">
+		<div v-if="$route.query.id">
       <h1>{{title}}</h1>
 			<ul>
 				<li v-for="(item, index) in contObj.list" :key="index">
@@ -60,7 +60,11 @@ export default {
 	},
 	watch: {
 		propsname() {
-			this.title = this.propsname;
+			if(this.propsname !== '') {
+				this.title = this.propsname;
+			} else {
+				this.$router.push({ query: {} });
+			}
 		},
 		"$route"() {
 			this.init();
@@ -69,10 +73,12 @@ export default {
 	methods: {
 		init() {
 			if(this.$route.query.id) {
-				var self = this,
+				let id = decodeURIComponent(atob(this.$route.query.id));
+				let self = this,
 						params = {
-							id: decodeURIComponent(atob(this.$route.query.id)), // 子节点的id
+							id: id, // 子节点的id
 						};
+				this.getChildName(id);
 				// 获取当前节点名称
 				apiUrl.getChildName(params).then(function(res) {
 					self.title = res.data[0].c_label;
@@ -99,6 +105,21 @@ export default {
 					});
 				});
 			}
+		},
+		// 获取当前三级节点的名称
+		getChildName(id) {
+			let self = this,
+			    params = {
+						id: id
+					};
+			apiUrl.getChildName(params).then(function(res) {
+				self.title = res.data[0].c_label;
+			}).catch(function(res) {
+				self.$message({
+					type: 'error',
+					message: '获取内容名称出错'
+				});
+			});
 		},
 		/* 获取文件原本的名称，没有id没有后缀那种 */
 		getRealImgName(filename) {

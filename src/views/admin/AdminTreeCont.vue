@@ -1,7 +1,7 @@
 <template>
   <div class="admincont">
-	  <div v-if="propsname !== ''">
-      <h1>{{propsname}}</h1>
+	  <div v-if="$route.query.id">
+      <h1>{{title}}</h1>
 			<ul>
 				<li v-for="(item, index) in contObj.list" :key="index">
 					<el-input v-model="item.title" placeholder="请输入内容"></el-input>
@@ -91,6 +91,7 @@ import TreeMain from '@/components/TreeMain'
 export default {
   data() {
     return {
+			title: '',
 			contObj: {},
 			isModify: true,
 			// 图片相关
@@ -112,6 +113,13 @@ export default {
 		});
 	},
 	watch: {
+		propsname() {
+			if(this.propsname !== '') {
+				this.title = this.propsname;
+			} else {
+				this.$router.push({ query: {} });
+			}
+		},
 		"$route"() {
 			this.init();
 		}
@@ -124,6 +132,7 @@ export default {
 						params = {
 							id: id, // 子节点的id
 						};
+				this.getChildName(id);
 				apiUrl.getNodeCont(params).then(function(res) {
 					self.contObj = {
 						id: res.data.id,
