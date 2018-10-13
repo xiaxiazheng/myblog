@@ -136,15 +136,14 @@ export default {
 						list: []
 					};
 					for(let item of res.data.list) {
+						// 处理文件名，treecont的图片名有点特殊，‘原来的名字+id+'.'+一个随机数+'.'+图片类型
 						let imgname = '';
 						if(item.filename) {
-							list1 = item.filename.split('.');
-							let houzhui1 = list[list.length - 1]; // 文件类型
-							list2 = item.filename.split('-');
-							let houzhui2 = list[list.length - 1]; // "随机数.文件类型"
-							let qianzhui2 = item.filename.substr(0, item.filename.length - houzhui2.length - 1); // 多-1是要剪掉'-'
-							let qianzhui1 = qianzhui2.substr(0, qianzhui2.length - res.data.id.length);
-							imgname = qianzhui1 + '.' + houzhui1;
+							let list = item.filename.split('.');
+							let filetype = list[list.length - 1]; // 文件类型
+							let randomNum = list[list.length - 2];
+							let originname = item.filename.substr(0, item.filename.length - filetype.length - randomNum.length - 2 - decodeURIComponent(atob(self.$route.query.id)).length);
+							imgname = originname + '.' + filetype;
 						}
 						self.contObj.list.push({
 							cont: item.cont,
@@ -159,7 +158,7 @@ export default {
 								imgname: imgname || '',
 								url: item.filename ? baseUrl + '/treecont/' + item.filename : ''
 							}] : [],
-						}); 
+						});
 					}
 				}).catch(function(res) {
 					console.log(res);

@@ -99,8 +99,11 @@ export default {
 		/* 获取文件原本的名称，没有id没有后缀那种 */
 		getRealImgName(filename) {
 			if(filename) {
-				let qianzhui = filename.split('-')[0];
-				return qianzhui.substr(0, qianzhui.length - this.contObj.id.length);
+				let list = filename.split('.');
+				let filetype = list[list.length - 1]; // 文件类型
+				let randomNum = list[list.length - 2];
+				let originname = filename.substr(0, filename.length - filetype.length - randomNum.length - 2 - decodeURIComponent(atob(this.$route.query.id)).length);
+				return originname;
 			}
 		},
 		/* 点击查看大图 */
