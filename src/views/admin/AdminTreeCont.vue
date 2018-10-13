@@ -1,6 +1,6 @@
 <template>
   <div class="admincont">
-	  <div v-if="$route.query.id">
+	  <div v-if="$route.query.id && propsname !== ''">
       <h1>{{title}}</h1>
 			<ul>
 				<li v-for="(item, index) in contObj.list" :key="index">
@@ -102,15 +102,20 @@ export default {
 			dialogImageUrl: '',
     }
 	},
+	props: ["propsname"],
 	components: {
 		TreeMain
 	},
 	mounted() {
 		this.$nextTick(function() {
 			this.init();
+			this.getChildName(decodeURIComponent(atob(this.$route.query.id)));
 		});
 	},
 	watch: {
+		propsname() {
+			this.title = this.propsname;
+		},
 		"$route"() {
 			this.init();
 		}
@@ -118,18 +123,11 @@ export default {
 	methods: {
 		init() {
 			if(this.$route.query.id !== '') {
+				let id = decodeURIComponent(atob(this.$route.query.id)); // 子节点的id
 				var self = this,
 						params = {
-							id: decodeURIComponent(atob(this.$route.query.id)), // 子节点的id
+							id: id, // 子节点的id
 						};
-				apiUrl.getChildName(params).then(function(res) {
-					self.title = res.data[0].c_label;
-				}).catch(function(res) {
-					self.$message({
-						type: 'error',
-						message: '初始化出错'
-					});
-				});
 				apiUrl.getNodeCont(params).then(function(res) {
 					self.contObj = {
 						id: res.data.id,
@@ -164,6 +162,21 @@ export default {
 					console.log(res);
 				});
 			}
+		},
+		// 获取当前三级节点的名称
+		getChildName(id) {
+			let self = this,
+			    params = {
+						id: id
+					};
+			apiUrl.getChildName(params).then(function(res) {
+				self.title = res.data[0].c_label;
+			}).catch(function(res) {
+				self.$message({
+					type: 'error',
+					message: '获取内容名称出错'
+				});
+			});
 		},
 		// 新增节点
 		addCont() {

@@ -39,7 +39,7 @@ import { baseUrl } from '@/config.js'
 import TreeMain from '@/components/TreeMain'
 
 export default {
-	props: ['isPC'],
+	props: ['isPC', 'propsname'],
   data() {
     return {
 			title: '',
@@ -59,6 +59,9 @@ export default {
 		});
 	},
 	watch: {
+		propsname() {
+			this.title = this.propsname;
+		},
 		"$route"() {
 			this.init();
 		}
@@ -70,6 +73,7 @@ export default {
 						params = {
 							id: decodeURIComponent(atob(this.$route.query.id)), // 子节点的id
 						};
+				// 获取当前节点名称
 				apiUrl.getChildName(params).then(function(res) {
 					self.title = res.data[0].c_label;
 				}).catch(function(res) {

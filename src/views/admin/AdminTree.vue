@@ -62,8 +62,8 @@
 				title="是否编辑">
 			</el-switch>
 			<!-- 切换以下两个 -->
-      <AdminTreeCont v-if="isEdit"></AdminTreeCont>
-			<TreeCont v-if="!isEdit"></TreeCont>
+      <AdminTreeCont v-if="isEdit" :propsname="propsname"></AdminTreeCont>
+			<TreeCont v-if="!isEdit" :propsname="propsname"></TreeCont>
 		</div>
 		<!-- 修改节点名称的dialog -->
 		<el-dialog
@@ -125,6 +125,8 @@ export default {
 				children: 'children',
 				label: 'label'
 			},
+			// 传给子组件的名字
+			propsname: '',
 			// 保存当前默认展开的节点，不然一操作树init数据树就要折叠
 			expandedList: [],
 			/* 节点改名 */
@@ -201,6 +203,7 @@ export default {
             id: btoa(encodeURIComponent(node.data.id))
           } 
 				});
+				this.propsname = node.data.label;
 				this.saveFathExpend(node);
 			}
 		},
@@ -291,7 +294,7 @@ export default {
 										self.msgTips(res);
 										self.saveFathExpend(node);
 										self.init();
-										self.clickObj = '';
+										self.propsname = '';
 									}).catch(function(res) {
 										self.msgTips(res);
 									});
@@ -332,7 +335,6 @@ export default {
 						self.msgTips(res);
 						self.saveFathExpend(node);
 						self.init();
-						self.clickObj = '';
 					}).catch(function(res) {
 						self.msgTips(res);
 					});
@@ -368,7 +370,6 @@ export default {
 						self.msgTips(res);
 						self.saveFathExpend(node);
 						self.init();
-						self.clickObj = '';
 					}).catch(function(res) {
 						self.msgTips(res);
 					});
@@ -471,10 +472,8 @@ export default {
 			apiUrl.modifyTreeNode(params).then(function(res) {
 				self.showEditDialog = false;
 				self.msgTips(res);
-				if(self.motifyNode.level === 3) {  // 若是三级节点，则把修改后的节点名传到子组件
-					self.clickObj.label = self.motifyNode.newNodeName;
-				}
 				self.init();
+				self.propsname = self.motifyNode.newNodeName;
 				self.motifyNode.newNodeName = '';
 			}).catch(function(res) {
 				self.msgTips(res);
