@@ -1,7 +1,7 @@
 <template>
   <div class="admincont">
-	  <div v-if="$route.query.id && propsname !== ''">
-      <h1>{{title}}</h1>
+	  <div v-if="propsname !== ''">
+      <h1>{{propsname}}</h1>
 			<ul>
 				<li v-for="(item, index) in contObj.list" :key="index">
 					<el-input v-model="item.title" placeholder="请输入内容"></el-input>
@@ -91,7 +91,6 @@ import TreeMain from '@/components/TreeMain'
 export default {
   data() {
     return {
-			title: '',
 			contObj: {},
 			isModify: true,
 			// 图片相关
@@ -113,9 +112,6 @@ export default {
 		});
 	},
 	watch: {
-		propsname() {
-			this.title = this.propsname;
-		},
 		"$route"() {
 			this.init();
 		}

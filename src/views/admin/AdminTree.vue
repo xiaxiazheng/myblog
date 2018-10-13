@@ -335,6 +335,7 @@ export default {
 						self.msgTips(res);
 						self.saveFathExpend(node);
 						self.init();
+						self.propsname = '';
 					}).catch(function(res) {
 						self.msgTips(res);
 					});
@@ -370,6 +371,7 @@ export default {
 						self.msgTips(res);
 						self.saveFathExpend(node);
 						self.init();
+						self.propsname = '';
 					}).catch(function(res) {
 						self.msgTips(res);
 					});

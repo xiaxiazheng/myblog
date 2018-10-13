@@ -1,6 +1,6 @@
 <template>
   <div class="treecont">
-		<div v-if="$route.query.id !== ''">
+		<div v-if="$route.query.id !== '' && propsname !== ''">
       <h1>{{title}}</h1>
 			<ul>
 				<li v-for="(item, index) in contObj.list" :key="index">
