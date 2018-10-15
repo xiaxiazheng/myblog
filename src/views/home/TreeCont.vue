@@ -141,7 +141,7 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="less" scoped>
+<style lang="less">
   .treecont {
 		padding: 10px;
 		text-align: left;
@@ -191,8 +191,7 @@ export default {
 		}
 		pre {
 			margin: 0;
-			// color: white;
-			// background-color: #23241f;
+			font-size: .9rem !important;
 			overflow-x: auto;
 			padding: 3px 1rem;
       white-space: pre;
