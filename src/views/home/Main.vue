@@ -1,10 +1,21 @@
 <template>
   <div class="main">
-    <el-carousel :interval="5000" v-if="imgUrlList.length !== 0">
-      <el-carousel-item v-for="(item, index) in imgUrlList" :key="index">
-        <img :src="item" alt="">
-      </el-carousel-item>
-    </el-carousel>
+    <div class="carousel">
+      <el-carousel :interval="5000" v-if="imgUrlList.length !== 0">
+        <el-carousel-item v-for="(item, index) in imgUrlList" :key="index">
+          <img :src="item" alt="">
+        </el-carousel-item>
+      </el-carousel>
+    </div>
+    <!-- 这是个只有首页底部才会出现的 footer -->
+    <footer>
+      <div style="width:300px;margin:0 auto;">
+		 		<a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=44010602005623" style="display:inline-block;text-decoration:none;height:20px;line-height:20px;">
+          <img src="~@/assets/beian.png"/>
+          <span>粤公网安备 44010602005623号</span>
+        </a>
+		 	</div>
+    </footer>
   </div>
 </template>
 
@@ -47,16 +58,37 @@ export default {
 @import '../../static/global.less';
 
   .main {
-    height: calc(100% - 7.2rem) !important;
-    padding: 1rem 0 2rem;
-    max-width: 960px; // 走马灯宽度
-    margin: 0 auto;
-    .el-carousel__container {
-      height: 540px !important;  // 走马灯高度，960*540比例16:9   
+    height: 100%;
+    .carousel {
+      max-width: 960px; // 走马灯宽度
+      margin: 0 auto;
+      .el-carousel__container {
+        height: 540px !important;  // 走马灯高度，960*540比例16:9   
+      }
+      img {
+        width: 100%;
+        height: 100%;
+      }
     }
-    img {
+    footer {
+      display: flex;
+      position: absolute;
+      bottom: 0;
       width: 100%;
-      height: 100%;
+      height: 3.6rem;
+      line-height: 3.6rem;
+      border-top: 1px solid #ccc;
+      box-sizing: border-box;
+      a {
+        img {
+          vertical-align: middle;
+          margin-right: .2rem;
+        }
+        span {
+          vertical-align: middle;
+          color:#939393;
+        }
+      }
     }
   }
 </style>

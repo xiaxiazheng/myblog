@@ -1,32 +1,32 @@
 <template>
-	<div class="treecont">
-		<div v-if="$route.query.id">
-			<h1>{{title}}</h1>
-			<ul>
-				<li v-for="(item, index) in contObj.list" :key="index">
-					<h2>
-						{{item.title}}
-						<span v-if="contObj.list">
-							修改时间：
-							<span>{{item.motifytime}}</span>
-						</span>
-					</h2>
-					<p v-html="item.cont" v-highlight></p>
-					<div v-if="item.filename" class="imgbox">
-						<img :src="baseImgUrl + item.filename" :alt="getRealImgName(item.filename)" @click="showBigImg(baseImgUrl + item.filename, getRealImgName(item.filename))" title="点击查看大图">
-						<span>{{ getRealImgName(item.filename) }}</span>
-					</div>
-				</li>
-			</ul>
-			<!-- 图片看大图 -->
-			<el-dialog :visible.sync="dialogVisible" :title="dialogImageName">
-				<img width="100%" :src="dialogImageUrl" :alt="dialogImageName" :title="dialogImageName">
-			</el-dialog>
-		</div>
-		<div v-else>
-			<TreeMain type="home"></TreeMain>
-		</div>
-	</div>
+  <div class="treecont">
+    <div v-if="$route.query.id">
+      <h1>{{title}}</h1>
+      <ul>
+        <li v-for="(item, index) in contObj.list" :key="index">
+          <h2>
+            {{item.title}}
+            <span v-if="contObj.list">
+              修改时间：
+              <span>{{item.motifytime}}</span>
+            </span>
+          </h2>
+          <p v-html="item.cont" v-highlight></p>
+          <div v-if="item.filename" class="imgbox">
+            <img :src="baseImgUrl + item.filename" :alt="getRealImgName(item.filename)" @click="showBigImg(baseImgUrl + item.filename, getRealImgName(item.filename))" title="点击查看大图">
+            <span>{{ getRealImgName(item.filename) }}</span>
+          </div>
+        </li>
+      </ul>
+      <!-- 图片看大图 -->
+      <el-dialog :visible.sync="dialogVisible" :title="dialogImageName">
+        <img width="100%" :src="dialogImageUrl" :alt="dialogImageName" :title="dialogImageName">
+      </el-dialog>
+    </div>
+    <div v-else>
+      <TreeMain type="home"></TreeMain>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -242,14 +242,14 @@ export default {
   }
   pre::-webkit-scrollbar-thumb {
     /*滚动条里面小方块*/
-    border-radius: .5rem;
+    border-radius: 0.5rem;
     -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
     background: white;
   }
   pre::-webkit-scrollbar-track {
     /*滚动条里面轨道*/
     -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-    border-radius: .5rem;
+    border-radius: 0.5rem;
     background: #282c34;
   }
 }
