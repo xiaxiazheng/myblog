@@ -106,8 +106,8 @@
 </template>
 
 <script>
-import AdminTreeCont from './AdminTreeCont'
-import TreeCont from '../home/TreeCont'
+import AdminTreeCont from '@/components/admin/AdminTreeCont'
+import TreeCont from '@/components/home/TreeCont'
 import apiUrl from '@/api/url.js'
 
 export default {

@@ -2,11 +2,11 @@ export default new VueRouter({
   routes: [
 		{
 			path: '',
-			name: 'Home',
+			// 这里不用设置name
 			component: resolve => require(['@/views/Home'], resolve),
 			children: [
 				{
-					path: '',
+					path: '',  // 因为在这里已经设置了默认的路由
 					name: 'Main',
 					component: resolve => require(['@/views/home/Main'], resolve),
 				},
@@ -25,11 +25,10 @@ export default new VueRouter({
 		{
 			path: '/login',
 			name: 'Login',
-			component: resolve => require(['@/components/Login'], resolve),
+			component: resolve => require(['@/views/Login'], resolve),
 		},
 		{
 			path: '/admin',
-			name: 'Admin',
 			component: resolve => require(['@/views/Admin'], resolve),
 			children: [
 				{

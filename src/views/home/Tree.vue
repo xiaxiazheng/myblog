@@ -45,7 +45,7 @@
 
 <script>
 import apiUrl from '@/api/url.js'
-import TreeCont from './TreeCont'
+import TreeCont from '@/components/home/TreeCont'
 
 export default {
   name: 'tree',
