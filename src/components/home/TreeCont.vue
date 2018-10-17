@@ -173,84 +173,84 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less">
-.treecont {
-  padding: 10px;
-  text-align: left;
-  line-height: 1.5;
-  h1 {
-    margin-bottom: 10px;
-    padding-right: 20px;
-  }
-  h2 {
-    padding-bottom: 0.3rem;
-    border-bottom: 1px solid #eaecef;
-    position: relative;
-    > span {
-      position: absolute;
-      right: 0;
-      bottom: 0.3rem;
-      font-size: 0.8rem;
-      color: #ccc;
+  .treecont {
+    padding: 10px;
+    text-align: left;
+    line-height: 1.5;
+    h1 {
+      margin-bottom: 10px;
+      padding-right: 20px;
     }
-  }
-  ul {
-    margin-top: 20px;
-    li {
-      margin: 20px 0;
-      .imgbox {
-        height: 314px;
-        margin: 0 auto;
-        overflow: hidden;
-        text-align: center;
-        img {
-          display: inherit;
-          height: calc(100% - 14px);
+    h2 {
+      padding-bottom: 0.3rem;
+      border-bottom: 1px solid #eaecef;
+      position: relative;
+      > span {
+        position: absolute;
+        right: 0;
+        bottom: 0.3rem;
+        font-size: 0.8rem;
+        color: #ccc;
+      }
+    }
+    ul {
+      margin-top: 20px;
+      li {
+        margin: 20px 0;
+        .imgbox {
+          height: 314px;
           margin: 0 auto;
-          cursor: pointer;
-        }
-        span {
-          font-size: 12px;
-          color: #ccc;
+          overflow: hidden;
+          text-align: center;
+          img {
+            display: inherit;
+            height: calc(100% - 14px);
+            margin: 0 auto;
+            cursor: pointer;
+          }
+          span {
+            font-size: 12px;
+            color: #ccc;
+          }
         }
       }
     }
+    p {
+      font-size: 1rem;
+      line-height: 1.7;
+      margin-bottom: 0.6rem;
+    }
+    pre {
+      margin: 0;
+      font-size: 0.9rem !important;
+      overflow-x: auto;
+      padding: 3px 1rem;
+      white-space: pre;
+      word-wrap: normal;
+      border: 1px solid black;
+      border-radius: 0.5rem;
+      font-size: 0.859rem;
+      font-family: Consolas, "Andale Mono WT", "Andale Mono", "Lucida Console",
+        "Lucida Sans Typewriter", "DejaVu Sans Mono", "Bitstream Vera Sans Mono",
+        "Liberation Mono", "Nimbus Mono L", Monaco, "Courier New", Courier,
+        monospace;
+    }
+    pre::-webkit-scrollbar {
+      /*滚动条整体样式*/
+      width: 7px; /* 高宽分别对应横竖滚动条的尺寸 */
+      height: 7px;
+    }
+    pre::-webkit-scrollbar-thumb {
+      /*滚动条里面小方块*/
+      border-radius: 0.5rem;
+      -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+      background: white;
+    }
+    pre::-webkit-scrollbar-track {
+      /*滚动条里面轨道*/
+      -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+      border-radius: 0.5rem;
+      background: #282c34;
+    }
   }
-  p {
-    font-size: 1rem;
-    line-height: 1.7;
-    margin-bottom: 0.6rem;
-  }
-  pre {
-    margin: 0;
-    font-size: 0.9rem !important;
-    overflow-x: auto;
-    padding: 3px 1rem;
-    white-space: pre;
-    word-wrap: normal;
-    border: 1px solid black;
-    border-radius: 0.5rem;
-    font-size: 0.859rem;
-    font-family: Consolas, "Andale Mono WT", "Andale Mono", "Lucida Console",
-      "Lucida Sans Typewriter", "DejaVu Sans Mono", "Bitstream Vera Sans Mono",
-      "Liberation Mono", "Nimbus Mono L", Monaco, "Courier New", Courier,
-      monospace;
-  }
-  pre::-webkit-scrollbar {
-    /*滚动条整体样式*/
-    width: 7px; /* 高宽分别对应横竖滚动条的尺寸 */
-    height: 7px;
-  }
-  pre::-webkit-scrollbar-thumb {
-    /*滚动条里面小方块*/
-    border-radius: 0.5rem;
-    -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-    background: white;
-  }
-  pre::-webkit-scrollbar-track {
-    /*滚动条里面轨道*/
-    -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-    border-radius: 0.5rem;
-    background: #282c34;
-  }
-}
 </style>
